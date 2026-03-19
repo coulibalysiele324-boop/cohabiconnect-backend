@@ -285,7 +285,7 @@
   .confirm-row span:last-child { font-weight: 500; color: var(--text); }
 
   /* ======= DASHBOARD ======= */
-  .dash-wrap { padding: 2rem 2.5rem; max-width: 960px; margin: 0 auto; }
+  .dash-wrap { padding: 2rem 2.5rem; max-width: 960px; margin: 0 auto; position: relative; }
   .dash-hdr { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
   .dash-hdr h2 { font-family: 'DM Serif Display', serif; font-size: 26px; font-weight: 400; color: var(--text); }
   .dash-hdr p { font-size: 14px; color: var(--text-muted); margin-top: 4px; }
@@ -497,6 +497,7 @@
     .nav { padding: 0.9rem 1.25rem; }
   }
   @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
   .fstep { animation: fadeInStep 0.28s ease; }
   @keyframes fadeInStep { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
 </style>
@@ -1214,13 +1215,34 @@
     <button class="itab" onclick="goTo('mediation')">Médiation</button>
   </div>
   <div class="dash-wrap">
+    <!-- Overlay verrou paiement -->
+    <div id="dash-lock-overlay" style="display:none;position:absolute;inset:0;background:rgba(248,250,252,0.97);z-index:50;border-radius:16px;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:2rem;min-height:60vh;">
+      <div style="width:72px;height:72px;border-radius:50%;background:#FEF3C7;display:flex;align-items:center;justify-content:center;margin-bottom:1.5rem;">
+        <svg width="36" height="36" viewBox="0 0 36 36" fill="none"><rect x="8" y="16" width="20" height="14" rx="3" stroke="#D97706" stroke-width="2"/><path d="M12 16V12C12 8.69 14.69 6 18 6C21.31 6 24 8.69 24 12V16" stroke="#D97706" stroke-width="2" stroke-linecap="round"/><circle cx="18" cy="23" r="2" fill="#D97706"/></svg>
+      </div>
+      <h2 style="font-family:'DM Serif Display',serif;font-size:22px;font-weight:400;color:var(--text);margin-bottom:10px;">Paiement en cours de v&#233;rification</h2>
+      <p style="font-size:14px;color:var(--text-muted);max-width:380px;line-height:1.75;margin-bottom:1.5rem;">
+        Votre paiement de <strong style="color:var(--green);">2 000 FCFA</strong> est en cours de validation par notre &#233;quipe.<br/>
+        Votre espace sera d&#233;verrouill&#233; d&#232;s que votre paiement sera confirm&#233;.
+      </p>
+      <div style="background:#F0FFF9;border:1px solid #b2e8d5;border-radius:12px;padding:14px 20px;margin-bottom:1.5rem;max-width:340px;width:100%;">
+        <div style="font-size:12px;color:#065f46;font-weight:600;margin-bottom:8px;">R&#233;f&#233;rence de paiement</div>
+        <div id="lock-ref" style="font-size:15px;font-weight:700;color:var(--green);font-family:monospace;">&#8212;</div>
+        <div id="lock-op"  style="font-size:12px;color:var(--text-muted);margin-top:4px;">&#8212;</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-muted);">
+        <div style="width:8px;height:8px;border-radius:50%;background:#F59E0B;animation:pulse 1.5s infinite;"></div>
+        En attente de confirmation admin
+      </div>
+    </div>
+
     <div class="notif-banner" id="dash-notif">
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1L10 6.5H16L11.5 9.8L13.5 15L8 11.5L2.5 15L4.5 9.8L0 6.5H6L8 1Z" fill="#1D9E75"/></svg>
       Proposition envoyée à <strong style="margin:0 4px;">Bintou Konaté</strong> — En attente de sa réponse (7 jours).
       <button class="notif-close" onclick="document.getElementById('dash-notif').style.display='none'">✕</button>
     </div>
     <div class="dash-hdr">
-      <div><h2>Bonjour, Aminata 👋</h2><p>Appartement Koko · Quartier Air France · Bouaké</p></div>
+      <div><h2 id="dash-welcome-msg">Bonjour &#x1F44B;</h2><p id="dash-welcome-sub">Bienvenue sur CohabiConnect !</p></div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;">
         <button class="btn btn-outline btn-sm" onclick="goTo('matching')">Trouver un coloc</button>
         <button class="btn btn-primary btn-sm">Rapport mensuel</button>
@@ -1686,17 +1708,40 @@ Aminata</textarea>
 
   function goToApp() {
     isLoggedIn = true;
-    // Récupérer prénom et nom saisis dans le formulaire
-    const prenom = (document.getElementById('field-prenom')?.value || '').trim();
-    const nom    = (document.getElementById('field-nom')?.value   || '').trim();
+
+    // Recuperer prenom et nom saisis
+    const prenom    = (document.getElementById('field-prenom')?.value || '').trim();
+    const nom       = (document.getElementById('field-nom')?.value   || '').trim();
     const initiales = ((prenom[0] || '') + (nom[0] || '')).toUpperCase() || 'U';
-    const nomComplet = prenom + (nom ? ' ' + nom : '');
-    // Mettre à jour l'avatar avec les vraies initiales
+
+    // Message selon heure du jour
+    const heure = new Date().getHours();
+    let salut;
+    if      (heure >= 5  && heure < 12) salut = 'Bonjour';
+    else if (heure >= 12 && heure < 18) salut = 'Bon après-midi';
+    else if (heure >= 18 && heure < 22) salut = 'Bonsoir';
+    else                                salut = 'Bonne nuit';
+
+    const msgEl = document.getElementById('dash-welcome-msg');
+    const subEl = document.getElementById('dash-welcome-sub');
+    if (msgEl) msgEl.innerHTML = salut + (prenom ? ', <strong>' + prenom + '</strong>' : '') + ' &#x1F44B;';
+    if (subEl) subEl.textContent = 'Bienvenue sur CohabiConnect !';
+
+    // Avatar initiales
     const avatar = document.getElementById('nav-user-avatar');
     if (avatar) avatar.textContent = initiales;
-    // Afficher avatar + bouton déconnexion dans la nav
+
+    // Sauvegarder le prenom globalement
+    window._userPrenom = prenom;
+    window._userNom    = nom;
+
+    // Afficher zone nav
     const navUserZone = document.getElementById('nav-user-zone');
     if (navUserZone) navUserZone.style.display = 'flex';
+
+    // Verrouiller le dashboard jusqu'a validation paiement
+    activerVerrouDashboard();
+
     goTo('dashboard');
   }
 
@@ -2423,6 +2468,55 @@ Aminata</textarea>
     return new Date(iso).toLocaleDateString('fr-FR', { day:'2-digit', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit' });
   }
 
+
+
+
+  // ===== VERROU DASHBOARD =====
+  // paymentValidated = true quand l'admin a confirme
+  var paymentValidated = false;
+
+  function activerVerrouDashboard() {
+    const overlay = document.getElementById('dash-lock-overlay');
+    if (!overlay) return;
+    if (paymentValidated) {
+      overlay.style.display = 'none';
+      return;
+    }
+    // Afficher la reference de paiement dans l'overlay
+    var ref = document.getElementById('pay-ref');
+    var op  = document.getElementById('pay-success-op');
+    var lockRef = document.getElementById('lock-ref');
+    var lockOp  = document.getElementById('lock-op');
+    if (lockRef && ref) lockRef.textContent = ref.textContent || '---';
+    if (lockOp  && op)  lockOp.textContent  = op.textContent  || '---';
+    overlay.style.display = 'flex';
+  }
+
+  // Appele par l'admin apres validation (simulation)
+  function deverrouDashboard() {
+    paymentValidated = true;
+    const overlay = document.getElementById('dash-lock-overlay');
+    if (!overlay) return;
+    // Animation de deverrouillage
+    overlay.innerHTML = (
+      '<div style="text-align:center;padding:2rem;">'
+      + '<div style="width:72px;height:72px;border-radius:50%;background:#F0FFF9;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;">'
+      + '<svg width="36" height="36" viewBox="0 0 36 36" fill="none">'
+      + '<rect x="8" y="16" width="20" height="14" rx="3" stroke="#1D9E75" stroke-width="2"/>'
+      + '<path d="M12 16V12C12 8.69 14.69 6 18 6C21.31 6 24 8.69 24 12V14" stroke="#1D9E75" stroke-width="2" stroke-linecap="round"/>'
+      + '<path d="M13 23L16.5 26.5L23 20" stroke="#1D9E75" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'
+      + '</svg></div>'
+      + '<h2 style="font-family:\'DM Serif Display\',serif;font-size:22px;font-weight:400;color:var(--text);margin-bottom:8px;">Paiement confirmé !</h2>'
+      + '<p style="font-size:14px;color:var(--text-muted);margin-bottom:1.5rem;">Votre espace est maintenant déverrouillé.</p>'
+      + '<button class="btn btn-primary" onclick="fermerVerrou()">Accéder à mon espace &rarr;</button>'
+      + '</div>'
+    );
+  }
+
+  function fermerVerrou() {
+    const overlay = document.getElementById('dash-lock-overlay');
+    if (overlay) overlay.style.display = 'none';
+  }
 
   // Init
   updateCharCount();
