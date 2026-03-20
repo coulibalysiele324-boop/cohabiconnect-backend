@@ -1328,7 +1328,7 @@
   .fstep { animation: fadeInStep 0.28s ease; }
   @keyframes fadeInStep { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
 </style>
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 </head>
 <body>
 
@@ -3128,6 +3128,18 @@ Aminata</textarea>
   // ===== INSCRIPTION =====
   function nextFStep(n) {
     if (n === 1 && !guardedFirstStep()) return;
+    // Sauvegarder les données utilisateur à l'étape 2 (identité)
+    if (n === 2) {
+      window._userData = {
+        prenom:        (document.getElementById('field-prenom')?.value || '').trim(),
+        nom:           (document.getElementById('field-nom')?.value   || '').trim(),
+        email:         (document.getElementById('field-email')?.value || '').trim(),
+        tel:           (document.getElementById('field-tel')?.value   || '').trim(),
+        etablissement: (document.getElementById('field-etab')?.value  || '').trim(),
+        role:          window._selectedRole || selectedRole || 'chercheur'
+      };
+      console.log('[CCI] Données utilisateur sauvegardées:', window._userData.email);
+    }
     document.getElementById('fs' + n).classList.remove('active');
     document.getElementById('sd' + n).classList.remove('active');
     document.getElementById('sd' + n).classList.add('done');
@@ -3916,13 +3928,14 @@ Aminata</textarea>
   // Appelee automatiquement apres le paiement de l'utilisateur
   function enregistrerDemandeAdmin(ref, operateur, telephone, dateObj) {
 
-    // Recuperer les infos du formulaire
-    const prenom        = (document.getElementById('field-prenom')?.value || '').trim();
-    const nom           = (document.getElementById('field-nom')?.value   || '').trim();
-    const email         = (document.getElementById('field-email')?.value || '').trim();
-    const tel2          = (document.getElementById('field-tel')?.value   || telephone || '').trim();
-    const etablissement = (document.getElementById('field-etab')?.value  || '').trim();
-    const role          = window._selectedRole || selectedRole || 'Chercheur';
+    // Recuperer les infos — priorité à window._userData sauvegardé à l'étape 2
+    const ud            = window._userData || {};
+    const prenom        = ud.prenom        || (document.getElementById('field-prenom')?.value || '').trim();
+    const nom           = ud.nom           || (document.getElementById('field-nom')?.value   || '').trim();
+    const email         = ud.email         || (document.getElementById('field-email')?.value || '').trim();
+    const tel2          = ud.tel           || (document.getElementById('field-tel')?.value   || telephone || '').trim();
+    const etablissement = ud.etablissement || (document.getElementById('field-etab')?.value  || '').trim();
+    const role          = ud.role          || window._selectedRole || selectedRole || 'Chercheur';
 
     const nouvelUser = {
       id:            'USR-' + Math.random().toString(36).substr(2,6).toUpperCase(),
@@ -4014,6 +4027,13 @@ Aminata</textarea>
       })
       .catch(function(err) {
         console.warn('[EMAIL] Erreur envoi:', err);
+        // Réessayer après réinitialisation
+        try {
+          emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+          emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ADMIN, params)
+            .then(function() { console.log('[EMAIL] Renvoi réussi'); })
+            .catch(function(e) { console.warn('[EMAIL] Échec définitif:', e.text || e); });
+        } catch(e2) {}
       });
   }
 
@@ -4214,7 +4234,6 @@ Aminata</textarea>
     btn.disabled = true;
 
     if (typeof emailjs !== 'undefined') {
-      emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
       emailjs.send(EMAILJS_SERVICE_CONTACT, EMAILJS_TEMPLATE_CONTACT, {
         nom:         nom,
         email_user:  email,
@@ -4496,6 +4515,13 @@ Aminata</textarea>
   initLandingAnimations();
   initPartnerCarousel();
   initTestiCarousel();
+  // Initialiser EmailJS une seule fois
+  try {
+    if (typeof emailjs !== 'undefined') {
+      emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+      console.log('[EMAIL] EmailJS initialisé');
+    }
+  } catch(e) { console.warn('[EMAIL] Erreur init:', e); }
 </script>
 
   <!-- ============================================================
