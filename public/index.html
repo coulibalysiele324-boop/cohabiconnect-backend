@@ -2044,7 +2044,7 @@
           <div style="position:relative;">
             <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:15px;pointer-events:none;">🔒</span>
             <input class="finput" type="password" placeholder="••••••••" style="padding-left:36px;" id="login-pwd" />
-            <button onclick="togglePwd('login-pwd', this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:13px;color:var(--text-hint);">Voir</button>
+            <button onclick="togglePwd('login-pwd', this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-hint);display:flex;align-items:center;padding:4px;border-radius:4px;transition:color 0.2s;" onmouseover="this.style.color='var(--green)'" onmouseout="this.style.color='var(--text-hint)'"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M1 12C1 12 5 5 12 5C19 5 23 12 23 12C23 12 19 19 12 19C5 19 1 12 1 12Z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/></svg></button>
           </div>
         </div>
 
@@ -2136,6 +2136,8 @@
       <div class="s-line" id="sl1"></div>
       <div class="s-dot" id="sd2"><div class="s-circle">2</div><span class="s-label">Identité</span></div>
       <div class="s-line" id="sl2"></div>
+      <div class="s-dot" id="sd-verify"><div class="s-circle">✉</div><span class="s-label">Vérif. email</span></div>
+      <div class="s-line" id="sl-verify" style="background:var(--border);"></div>
       <div class="s-dot" id="sd3"><div class="s-circle">3</div><span class="s-label">Logement</span></div>
       <div class="s-line" id="sl3"></div>
       <div class="s-dot" id="sd4"><div class="s-circle">4</div><span class="s-label">Préférences</span></div>
@@ -2173,9 +2175,9 @@
           Photo ajoutée avec succès
         </div>
       </div>
+      <div id="photo-error" style="display:none;background:#FAECE7;border-radius:10px;padding:10px 14px;font-size:12.5px;color:var(--coral);margin-bottom:12px;">📸 Veuillez ajouter une photo de profil pour continuer.</div>
       <div class="factions">
-        <button class="skip-link" onclick="nextFStep(1)">Passer cette étape</button>
-        <button class="btn btn-primary" onclick="nextFStep(1)">Continuer →</button>
+        <button class="btn btn-primary" onclick="nextFStep(1)" style="width:100%;justify-content:center;">Continuer avec cette photo →</button>
       </div>
     </div>
 
@@ -2190,7 +2192,7 @@
           <div style="position:relative;">
             <svg style="position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none;width:16px;height:16px;" viewBox="0 0 24 24" fill="none"><rect x="5" y="11" width="14" height="10" rx="2" stroke="#888780" stroke-width="1.5"/><path d="M8 11V7C8 4.8 9.8 3 12 3C14.2 3 16 4.8 16 7V11" stroke="#888780" stroke-width="1.5" stroke-linecap="round"/></svg>
             <input class="finput" type="password" id="field-password" placeholder="Minimum 6 caractères" style="padding-left:36px;padding-right:44px;" />
-            <button type="button" onclick="togglePwd('field-password',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;font-size:12px;color:var(--text-muted);cursor:pointer;">Voir</button>
+            <button type="button" onclick="togglePwd('field-password',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-muted);display:flex;align-items:center;padding:4px;border-radius:4px;transition:color 0.2s;" onmouseover="this.style.color='var(--green)'" onmouseout="this.style.color='var(--text-muted)'"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M1 12C1 12 5 5 12 5C19 5 23 12 23 12C23 12 19 19 12 19C5 19 1 12 1 12Z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/></svg></button>
           </div>
         </div>
         <!-- Confirmer mot de passe -->
@@ -2248,7 +2250,41 @@
       <div class="factions"><button class="btn btn-outline" onclick="prevFStep(2)">← Retour</button><button class="btn btn-primary" onclick="nextFStep(2)">Continuer →</button></div>
     </div>
 
-    <!-- STEP 3 : LOGEMENT (adaptatif selon le rôle) -->
+    <!-- STEP VERIFY : VÉRIFICATION EMAIL -->
+    <div class="fstep" id="fs-verify" style="display:none;">
+      <div style="text-align:center;padding:1rem 0 2rem;">
+        <div style="width:72px;height:72px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;">
+          <svg width="34" height="34" viewBox="0 0 34 34" fill="none"><path d="M4 8H30C31.1 8 32 8.9 32 10V24C32 25.1 31.1 26 30 26H4C2.9 26 2 25.1 2 24V10C2 8.9 2.9 8 4 8Z" stroke="#1D9E75" stroke-width="1.8"/><path d="M2 10L17 19L32 10" stroke="#1D9E75" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </div>
+        <h3 style="font-family:'DM Serif Display',serif;font-size:20px;font-weight:400;color:var(--text);margin-bottom:8px;">Vérifiez votre email</h3>
+        <p style="font-size:13.5px;color:var(--text-muted);max-width:360px;margin:0 auto 1.5rem;line-height:1.65;">
+          Un code à 6 chiffres a été envoyé à<br/>
+          <strong id="verify-email-display" style="color:var(--text);">votre email</strong>
+        </p>
+
+        <!-- Champs code 6 chiffres -->
+        <div style="display:flex;gap:10px;justify-content:center;margin-bottom:1.25rem;" id="verify-code-inputs">
+          <input type="text" maxlength="1" class="finput verify-digit" style="width:48px;height:56px;text-align:center;font-size:22px;font-weight:700;padding:0;border-radius:12px;" oninput="verifyDigitInput(this,0)" onkeydown="verifyDigitBack(event,this,0)" />
+          <input type="text" maxlength="1" class="finput verify-digit" style="width:48px;height:56px;text-align:center;font-size:22px;font-weight:700;padding:0;border-radius:12px;" oninput="verifyDigitInput(this,1)" onkeydown="verifyDigitBack(event,this,1)" />
+          <input type="text" maxlength="1" class="finput verify-digit" style="width:48px;height:56px;text-align:center;font-size:22px;font-weight:700;padding:0;border-radius:12px;" oninput="verifyDigitInput(this,2)" onkeydown="verifyDigitBack(event,this,2)" />
+          <input type="text" maxlength="1" class="finput verify-digit" style="width:48px;height:56px;text-align:center;font-size:22px;font-weight:700;padding:0;border-radius:12px;" oninput="verifyDigitInput(this,3)" onkeydown="verifyDigitBack(event,this,3)" />
+          <input type="text" maxlength="1" class="finput verify-digit" style="width:48px;height:56px;text-align:center;font-size:22px;font-weight:700;padding:0;border-radius:12px;" oninput="verifyDigitInput(this,4)" onkeydown="verifyDigitBack(event,this,4)" />
+          <input type="text" maxlength="1" class="finput verify-digit" style="width:48px;height:56px;text-align:center;font-size:22px;font-weight:700;padding:0;border-radius:12px;" oninput="verifyDigitInput(this,5)" onkeydown="verifyDigitBack(event,this,5)" />
+        </div>
+
+        <div id="verify-error" style="display:none;font-size:12.5px;color:var(--coral);background:#FAECE7;border-radius:8px;padding:8px 14px;margin-bottom:1rem;">Code incorrect. Réessayez.</div>
+        <div id="verify-success" style="display:none;font-size:12.5px;color:var(--green);background:var(--green-light);border-radius:8px;padding:8px 14px;margin-bottom:1rem;">✅ Email vérifié avec succès !</div>
+
+        <button class="btn btn-primary" onclick="verifierCode()" style="width:100%;justify-content:center;margin-bottom:12px;">
+          Vérifier le code →
+        </button>
+        <button onclick="renvoyerCode()" style="background:none;border:none;font-size:12.5px;color:var(--green);cursor:pointer;text-decoration:underline;">
+          Renvoyer le code
+        </button>
+      </div>
+    </div>
+
+        <!-- STEP 3 : LOGEMENT (adaptatif selon le rôle) -->
     <div class="fstep" id="fs3">
 
       <!-- VERSION : CHERCHER UN COLOCATAIRE -->
@@ -3185,10 +3221,35 @@ Aminata</textarea>
   // ===== INSCRIPTION =====
   function nextFStep(n) {
     if (n === 1 && !guardedFirstStep()) return;
+    // Photo obligatoire à l'étape 1
+    if (n === 1) {
+      if (!photoData) {
+        var photoErr = document.getElementById('photo-error');
+        if (photoErr) photoErr.style.display = 'block';
+        var pz = document.getElementById('photo-zone');
+        if (pz) { pz.style.border = '2px solid var(--coral)'; pz.style.animation = 'shake 0.4s ease'; setTimeout(function(){ pz.style.border=''; pz.style.animation=''; }, 500); }
+        return;
+      }
+      var photoErr = document.getElementById('photo-error');
+      if (photoErr) photoErr.style.display = 'none';
+    }
     // Valider l'étape 2 (identité + mot de passe) avant de passer
     if (n === 2) {
       if (!validerEtapeDeux()) return;
-      console.log('[CCI] Étape 2 validée, email:', window._userData?.email);
+      // Envoyer le code de vérification et afficher l'étape verify
+      envoyerCodeVerification(window._userData.email, window._userData.prenom);
+      var emailDisp = document.getElementById('verify-email-display');
+      if (emailDisp) emailDisp.textContent = window._userData.email;
+      // Afficher l'étape verify au lieu de fs3
+      document.getElementById('fs2').classList.remove('active');
+      document.getElementById('sd2').classList.remove('active');
+      document.getElementById('sd2').classList.add('done');
+      document.getElementById('sl2').style.background = 'var(--green)';
+      document.getElementById('fs-verify').style.display = 'block';
+      var sdv = document.getElementById('sd-verify');
+      if (sdv) sdv.classList.add('active');
+      currentFStep = 'verify';
+      return; // Ne pas continuer le flux normal
     }
     document.getElementById('fs' + n).classList.remove('active');
     document.getElementById('sd' + n).classList.remove('active');
@@ -3411,6 +3472,117 @@ Aminata</textarea>
       currentUser = result.user;
     } else {
       console.warn('[DB] Erreur création:', result.error);
+    }
+  }
+
+
+  // ===== VÉRIFICATION EMAIL =====
+  var verifyCode   = '';
+  var emailVerified = false;
+
+  function genererCode() {
+    verifyCode = Math.floor(100000 + Math.random() * 900000).toString();
+    return verifyCode;
+  }
+
+  function envoyerCodeVerification(email, prenom) {
+    var code = genererCode();
+    console.log('[VERIFY] Code généré pour', email, ':', code);
+
+    if (typeof emailjs === 'undefined') {
+      console.warn('[VERIFY] EmailJS non dispo — code simulé:', code);
+      return;
+    }
+
+    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_VERIFY, {
+      to_email:   email,
+      nom_complet: prenom,
+      code:       code,
+      expiry:     '10 minutes'
+    }).then(function() {
+      console.log('[VERIFY] Code envoyé à', email);
+    }).catch(function(e) {
+      console.warn('[VERIFY] Erreur envoi code:', e);
+    });
+  }
+
+  function verifierCode() {
+    var digits = document.querySelectorAll('.verify-digit');
+    var saisi  = Array.from(digits).map(function(d) { return d.value; }).join('');
+    var errEl  = document.getElementById('verify-error');
+    var sucEl  = document.getElementById('verify-success');
+
+    if (saisi.length < 6) {
+      errEl.textContent = 'Veuillez saisir les 6 chiffres du code.';
+      errEl.style.display = 'block';
+      sucEl.style.display = 'none';
+      return;
+    }
+
+    if (saisi === verifyCode) {
+      errEl.style.display = 'none';
+      sucEl.style.display = 'block';
+      emailVerified = true;
+      // Marquer le dot stepper comme validé
+      var dot = document.getElementById('sd-verify');
+      if (dot) { dot.classList.add('done'); dot.classList.remove('active'); }
+      var line = document.getElementById('sl-verify');
+      if (line) line.style.background = 'var(--green)';
+      // Passer à l'étape 3 automatiquement après 1s
+      setTimeout(function() { passerAEtape3(); }, 900);
+    } else {
+      emailVerified = false;
+      errEl.textContent = 'Code incorrect. Vérifiez votre email et réessayez.';
+      errEl.style.display = 'block';
+      sucEl.style.display = 'none';
+      // Shake des champs
+      var wrap = document.getElementById('verify-code-inputs');
+      if (wrap) { wrap.style.animation = 'shake 0.4s ease'; setTimeout(function(){ wrap.style.animation=''; }, 500); }
+      // Vider les champs
+      digits.forEach(function(d) { d.value = ''; });
+      digits[0].focus();
+    }
+  }
+
+  function passerAEtape3() {
+    // Masquer fs-verify, afficher fs3
+    document.getElementById('fs-verify').style.display = 'none';
+    document.getElementById('fs3').classList.add('active');
+    var sd3 = document.getElementById('sd3');
+    if (sd3) sd3.classList.add('active');
+    currentFStep = 3;
+  }
+
+  function renvoyerCode() {
+    if (!window._userData) return;
+    envoyerCodeVerification(window._userData.email, window._userData.prenom);
+    // Réinitialiser les champs
+    document.querySelectorAll('.verify-digit').forEach(function(d) { d.value = ''; });
+    document.getElementById('verify-error').style.display = 'none';
+    document.getElementById('verify-success').style.display = 'none';
+    // Feedback
+    var btn = event.target;
+    btn.textContent = 'Code renvoyé ✓';
+    btn.style.color = 'var(--green-dark)';
+    setTimeout(function() { btn.textContent = 'Renvoyer le code'; btn.style.color = ''; }, 3000);
+  }
+
+  // Navigation auto entre les champs du code
+  function verifyDigitInput(el, idx) {
+    el.value = el.value.replace(/[^0-9]/g, '');
+    if (el.value && idx < 5) {
+      var next = document.querySelectorAll('.verify-digit')[idx + 1];
+      if (next) next.focus();
+    }
+    // Auto-vérifier quand tous les champs sont remplis
+    var all = Array.from(document.querySelectorAll('.verify-digit')).map(function(d) { return d.value; }).join('');
+    if (all.length === 6) setTimeout(verifierCode, 200);
+  }
+
+  function verifyDigitBack(e, el, idx) {
+    if (e.key === 'Backspace' && !el.value && idx > 0) {
+      var prev = document.querySelectorAll('.verify-digit')[idx - 1];
+      if (prev) { prev.value = ''; prev.focus(); }
     }
   }
 
@@ -4245,6 +4417,7 @@ Aminata</textarea>
   const EMAILJS_SERVICE_ID       = 'service_cohabiconnect';
   const EMAILJS_TEMPLATE_ADMIN   = 'template_cci_admin';
   const EMAILJS_TEMPLATE_USER    = 'template_cci_user';
+  const EMAILJS_TEMPLATE_VERIFY  = 'template_cci_verify'; // Vérification email
   const EMAILJS_PUBLIC_KEY       = '4YafU35KGOv8wj0Vi';
   // Service dedie aux messages contact (coulibalysieledabila@gmail.com)
   const EMAILJS_SERVICE_CONTACT  = 'service_cci_contact';
