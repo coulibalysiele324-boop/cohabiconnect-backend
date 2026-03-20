@@ -1257,6 +1257,7 @@
   .partner-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
 
   @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 40%{transform:translateX(6px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)} }
 
   /* ── Animations landing ── */
   @keyframes fadeInUp {
@@ -2183,6 +2184,25 @@
       <div class="fgrid">
         <div class="fgroup"><label class="flabel">Prénom</label><input class="finput" type="text" id="field-prenom" value="Aminata" /></div>
         <div class="fgroup"><label class="flabel">Nom de famille</label><input class="finput" type="text" id="field-nom" value="Koné" /></div>
+        <!-- Mot de passe -->
+        <div class="fgroup">
+          <label class="flabel">Mot de passe *</label>
+          <div style="position:relative;">
+            <svg style="position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none;width:16px;height:16px;" viewBox="0 0 24 24" fill="none"><rect x="5" y="11" width="14" height="10" rx="2" stroke="#888780" stroke-width="1.5"/><path d="M8 11V7C8 4.8 9.8 3 12 3C14.2 3 16 4.8 16 7V11" stroke="#888780" stroke-width="1.5" stroke-linecap="round"/></svg>
+            <input class="finput" type="password" id="field-password" placeholder="Minimum 6 caractères" style="padding-left:36px;padding-right:44px;" />
+            <button type="button" onclick="togglePwd('field-password',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;font-size:12px;color:var(--text-muted);cursor:pointer;">Voir</button>
+          </div>
+        </div>
+        <!-- Confirmer mot de passe -->
+        <div class="fgroup">
+          <label class="flabel">Confirmer *</label>
+          <div style="position:relative;">
+            <svg style="position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none;width:16px;height:16px;" viewBox="0 0 24 24" fill="none"><rect x="5" y="11" width="14" height="10" rx="2" stroke="#888780" stroke-width="1.5"/><path d="M8 11V7C8 4.8 9.8 3 12 3C14.2 3 16 4.8 16 7V11" stroke="#888780" stroke-width="1.5" stroke-linecap="round"/></svg>
+            <input class="finput" type="password" id="field-password-confirm" placeholder="Répéter le mot de passe" style="padding-left:36px;" />
+          </div>
+          <div id="pwd-match-msg" style="font-size:11.5px;margin-top:4px;display:none;"></div>
+        </div>
+
         <div class="fgroup full"><label class="flabel">Adresse email</label>
           <div style="position:relative;">
             <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:15px;pointer-events:none;">✉️</span>
@@ -3032,11 +3052,48 @@ Aminata</textarea>
 
   // ===== CONNEXION =====
   function doLogin() {
-    const email = document.getElementById('login-email').value.trim();
-    const pwd = document.getElementById('login-pwd').value;
-    const err = document.getElementById('login-error');
-    if (!email || !pwd) { err.style.display = 'flex'; return; }
-    err.style.display = 'none';
+    var email = (document.getElementById('login-email')?.value || '').trim();
+    var pwd   = document.getElementById('login-pwd')?.value || '';
+    var err   = document.getElementById('login-error');
+
+    if (!email || !pwd) {
+      if (err) { err.innerHTML = 'Veuillez remplir tous les champs.'; err.style.display = 'flex'; }
+      return;
+    }
+
+    var result = dbLogin(email, pwd);
+
+    if (!result.ok) {
+      if (err) {
+        err.innerHTML = result.error === 'not_found'
+          ? 'Aucun compte trouvé avec cet email.'
+          : 'Mot de passe incorrect. Réessayez.';
+        err.style.display = 'flex';
+      }
+      // Animation shake
+      var card = err?.closest('[style*="background:#fff"]') || err?.parentElement;
+      if (card) { card.style.animation = 'shake 0.4s ease'; setTimeout(function() { card.style.animation = ''; }, 400); }
+      return;
+    }
+
+    // Compte en attente de validation
+    if (result.user.statut === 'en_attente') {
+      if (err) {
+        err.innerHTML = '\u23f3 Votre compte est en attente de validation. Nous vous contacterons dès confirmation.';
+        err.style.display = 'flex';
+      }
+      return;
+    }
+
+    // Connexion réussie
+    if (err) err.style.display = 'none';
+    dbSetSession(result.user);
+    currentUser = result.user;
+
+    // Restaurer les infos dans window._userData pour goToApp
+    window._userData = result.user;
+    window._selectedRole = result.user.role;
+
     goToApp();
   }
 
@@ -3128,17 +3185,10 @@ Aminata</textarea>
   // ===== INSCRIPTION =====
   function nextFStep(n) {
     if (n === 1 && !guardedFirstStep()) return;
-    // Sauvegarder les données utilisateur à l'étape 2 (identité)
+    // Valider l'étape 2 (identité + mot de passe) avant de passer
     if (n === 2) {
-      window._userData = {
-        prenom:        (document.getElementById('field-prenom')?.value || '').trim(),
-        nom:           (document.getElementById('field-nom')?.value   || '').trim(),
-        email:         (document.getElementById('field-email')?.value || '').trim(),
-        tel:           (document.getElementById('field-tel')?.value   || '').trim(),
-        etablissement: (document.getElementById('field-etab')?.value  || '').trim(),
-        role:          window._selectedRole || selectedRole || 'chercheur'
-      };
-      console.log('[CCI] Données utilisateur sauvegardées:', window._userData.email);
+      if (!validerEtapeDeux()) return;
+      console.log('[CCI] Étape 2 validée, email:', window._userData?.email);
     }
     document.getElementById('fs' + n).classList.remove('active');
     document.getElementById('sd' + n).classList.remove('active');
@@ -3163,6 +3213,206 @@ Aminata</textarea>
     if (n > 1) document.getElementById('sl' + currentFStep).style.background = 'var(--border)';
   }
 
+
+
+  // ============================================================
+  // BASE DE DONNÉES UTILISATEURS — localStorage persistant
+  // ============================================================
+
+  // Clé de stockage
+  var CCI_DB_KEY = 'cci_users_db';
+
+  // Hachage simple du mot de passe (non cryptographique, suffisant pour localStorage)
+  function hashPwd(pwd) {
+    var hash = 0;
+    for (var i = 0; i < pwd.length; i++) {
+      hash = ((hash << 5) - hash) + pwd.charCodeAt(i);
+      hash |= 0;
+    }
+    return 'cci_' + Math.abs(hash).toString(36) + '_' + pwd.length;
+  }
+
+  // Lire tous les utilisateurs
+  function dbGetUsers() {
+    try {
+      return JSON.parse(localStorage.getItem(CCI_DB_KEY) || '[]');
+    } catch(e) { return []; }
+  }
+
+  // Sauvegarder tous les utilisateurs
+  function dbSaveUsers(users) {
+    try {
+      localStorage.setItem(CCI_DB_KEY, JSON.stringify(users));
+    } catch(e) { console.warn('[DB] Erreur sauvegarde:', e); }
+  }
+
+  // Trouver un utilisateur par email
+  function dbFindByEmail(email) {
+    return dbGetUsers().find(function(u) {
+      return u.email.toLowerCase() === email.toLowerCase();
+    }) || null;
+  }
+
+  // Créer un nouvel utilisateur
+  function dbCreateUser(data) {
+    var users = dbGetUsers();
+    // Vérifier doublon email
+    if (dbFindByEmail(data.email)) return { ok: false, error: 'email_exists' };
+    var user = {
+      id:            'USR-' + Date.now().toString(36).toUpperCase(),
+      prenom:        data.prenom,
+      nom:           data.nom,
+      email:         data.email,
+      tel:           data.tel,
+      etablissement: data.etablissement,
+      role:          data.role,
+      pwdHash:       hashPwd(data.password),
+      statut:        'en_attente', // activé après validation admin
+      createdAt:     new Date().toISOString(),
+      paiementRef:   data.paiementRef || ''
+    };
+    users.push(user);
+    dbSaveUsers(users);
+    return { ok: true, user: user };
+  }
+
+  // Vérifier les identifiants
+  function dbLogin(email, password) {
+    var user = dbFindByEmail(email);
+    if (!user) return { ok: false, error: 'not_found' };
+    if (user.pwdHash !== hashPwd(password)) return { ok: false, error: 'wrong_pwd' };
+    return { ok: true, user: user };
+  }
+
+  // Mettre à jour le statut d'un utilisateur (ex: 'actif' après validation)
+  function dbUpdateStatus(email, statut) {
+    var users = dbGetUsers();
+    var idx = users.findIndex(function(u) { return u.email.toLowerCase() === email.toLowerCase(); });
+    if (idx !== -1) {
+      users[idx].statut = statut;
+      dbSaveUsers(users);
+      return true;
+    }
+    return false;
+  }
+
+  // Utilisateur connecté en session
+  var currentUser = null;
+
+  function dbSetSession(user) {
+    currentUser = user;
+    try { localStorage.setItem('cci_session', JSON.stringify({ id: user.id, email: user.email, ts: Date.now() })); } catch(e) {}
+  }
+
+  function dbRestoreSession() {
+    try {
+      var s = JSON.parse(localStorage.getItem('cci_session') || 'null');
+      if (!s) return null;
+      // Session valide 7 jours
+      if (Date.now() - s.ts > 7 * 24 * 3600 * 1000) {
+        localStorage.removeItem('cci_session');
+        return null;
+      }
+      return dbFindByEmail(s.email) || null;
+    } catch(e) { return null; }
+  }
+
+  function dbClearSession() {
+    currentUser = null;
+    try { localStorage.removeItem('cci_session'); } catch(e) {}
+  }
+
+  // ============================================================
+  // INSCRIPTION — Validation + enregistrement
+  // ============================================================
+  function validerEtapeDeux() {
+    var prenom  = (document.getElementById('field-prenom')?.value || '').trim();
+    var nom     = (document.getElementById('field-nom')?.value   || '').trim();
+    var email   = (document.getElementById('field-email')?.value || '').trim();
+    var tel     = (document.getElementById('field-tel')?.value   || '').trim();
+    var pwd     = (document.getElementById('field-password')?.value || '');
+    var pwd2    = (document.getElementById('field-password-confirm')?.value || '');
+    var matchEl = document.getElementById('pwd-match-msg');
+
+    // Vérification champs obligatoires
+    if (!prenom || !nom || !email || !tel || !pwd) {
+      afficherErreurFs2('Veuillez remplir tous les champs obligatoires.');
+      return false;
+    }
+    // Email valide
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      afficherErreurFs2('Adresse email invalide.');
+      return false;
+    }
+    // Vérifier doublon email
+    if (dbFindByEmail(email)) {
+      afficherErreurFs2('\u26a0\ufe0f Un compte existe d\u00e9j\u00e0 avec cet email. <a onclick="goTo(\'connexion\')" style="color:var(--green);cursor:pointer;font-weight:600;">Se connecter</a>');
+      return false;
+    }
+    // Mot de passe minimum 6 chars
+    if (pwd.length < 6) {
+      afficherErreurFs2('Le mot de passe doit contenir au moins 6 caractères.');
+      return false;
+    }
+    // Confirmation
+    if (pwd !== pwd2) {
+      if (matchEl) {
+        matchEl.textContent = '\u274c Les mots de passe ne correspondent pas.';
+        matchEl.style.color = 'var(--coral)';
+        matchEl.style.display = 'block';
+      }
+      return false;
+    } else {
+      if (matchEl) {
+        matchEl.textContent = '\u2713 Mots de passe identiques';
+        matchEl.style.color = 'var(--green)';
+        matchEl.style.display = 'block';
+      }
+    }
+
+    // Sauvegarder dans window._userData pour réutilisation
+    window._userData = { prenom, nom, email, tel,
+      etablissement: (document.getElementById('field-etab')?.value || '').trim(),
+      role: window._selectedRole || selectedRole || 'chercheur',
+      password: pwd
+    };
+    return true;
+  }
+
+  function afficherErreurFs2(msg) {
+    var existing = document.getElementById('fs2-error');
+    if (!existing) {
+      existing = document.createElement('div');
+      existing.id = 'fs2-error';
+      existing.style.cssText = 'background:#FAECE7;border-radius:10px;padding:10px 14px;font-size:12.5px;color:var(--coral);margin-bottom:1rem;';
+      var fs2 = document.getElementById('fs2');
+      if (fs2) fs2.insertBefore(existing, fs2.firstChild);
+    }
+    existing.innerHTML = msg;
+    existing.style.display = 'block';
+    existing.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  // Enregistrer l'utilisateur en DB au moment du paiement confirmé
+  function enregistrerUtilisateurDB(ref) {
+    if (!window._userData) return;
+    var result = dbCreateUser({
+      prenom:        window._userData.prenom,
+      nom:           window._userData.nom,
+      email:         window._userData.email,
+      tel:           window._userData.tel,
+      etablissement: window._userData.etablissement,
+      role:          window._userData.role,
+      password:      window._userData.password,
+      paiementRef:   ref
+    });
+    if (result.ok) {
+      console.log('[DB] Utilisateur créé:', result.user.email);
+      currentUser = result.user;
+    } else {
+      console.warn('[DB] Erreur création:', result.error);
+    }
+  }
 
   // ===== DÉCONNEXION UTILISATEUR =====
   function userLogout() {
@@ -3201,6 +3451,8 @@ Aminata</textarea>
     currentFStep = 1;
     selectedPayment = null;
     photoData = null;
+    window._userData = null;
+    dbClearSession();  // Effacer la session persistante
     // Masquer la sidebar et remettre la nav top
     const sidebar = document.getElementById('app-sidebar');
     if (sidebar) sidebar.style.display = 'none';
@@ -3301,7 +3553,8 @@ Aminata</textarea>
         document.getElementById('pay-success-phone').textContent = phone;
         document.getElementById('pay-success-date').textContent = dateStr;
 
-        // === Enregistrer la demande dans l'espace admin ===
+        // === Enregistrer en DB + espace admin ===
+        enregistrerUtilisateurDB(ref);
         enregistrerDemandeAdmin(ref, info.name, phone, now);
       }
     }, 900);
@@ -4165,6 +4418,12 @@ Aminata</textarea>
   // Appele par l'admin apres validation (simulation)
   function deverrouDashboard() {
     paymentValidated = true;
+    // Activer le compte en base de données
+    if (window._userData && window._userData.email) {
+      dbUpdateStatus(window._userData.email, 'actif');
+      if (currentUser) currentUser.statut = 'actif';
+      console.log('[DB] Compte activé:', window._userData.email);
+    }
     const overlay = document.getElementById('dash-lock-overlay');
     if (!overlay) return;
     // Animation de deverrouillage
@@ -4512,6 +4771,31 @@ Aminata</textarea>
 
   // Init
   updateCharCount();
+  // Vérifier si une session existe (reconnexion automatique)
+  var restoredUser = dbRestoreSession();
+  if (restoredUser && restoredUser.statut === 'actif') {
+    window._userData = restoredUser;
+    window._selectedRole = restoredUser.role;
+    currentUser = restoredUser;
+    // Afficher sidebar et aller au dashboard
+    setTimeout(function() {
+      var sidebar = document.getElementById('app-sidebar');
+      if (sidebar) sidebar.style.display = 'block';
+      var mainNav = document.getElementById('main-nav');
+      if (mainNav) mainNav.style.display = 'none';
+      var sbAv   = document.getElementById('sb-user-avatar');
+      var sbName = document.getElementById('sb-user-name');
+      if (sbAv)   sbAv.textContent   = ((restoredUser.prenom[0]||'') + (restoredUser.nom[0]||'')).toUpperCase();
+      if (sbName) sbName.textContent = restoredUser.prenom;
+      goTo('dashboard');
+      var msgEl = document.getElementById('dash-welcome-msg');
+      if (msgEl) {
+        var h = new Date().getHours();
+        var s = h < 12 ? 'Bonjour' : h < 18 ? 'Bon après-midi' : 'Bonsoir';
+        msgEl.innerHTML = s + ', <strong>' + restoredUser.prenom + '</strong> &#x1F44B;';
+      }
+    }, 100);
+  }
   initLandingAnimations();
   initPartnerCarousel();
   initTestiCarousel();
