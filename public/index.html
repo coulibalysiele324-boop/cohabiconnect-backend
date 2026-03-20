@@ -651,6 +651,191 @@
     #page-contact > div { padding: 2rem 1rem; }
   }
 
+
+  /* ============================================================
+     SIDEBAR — Navigation verticale gauche
+  ============================================================ */
+  #app-sidebar {
+    position: fixed;
+    left: 0; top: 0; bottom: 0;
+    width: 64px;
+    z-index: 200;
+    animation: slideInLeft 0.35s cubic-bezier(0.34,1.56,0.64,1) forwards;
+  }
+  @keyframes slideInLeft {
+    from { transform: translateX(-80px); opacity: 0; }
+    to   { transform: translateX(0);     opacity: 1; }
+  }
+
+  .sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    background: #fff;
+    border-right: 1px solid var(--border);
+    padding: 16px 0;
+    box-shadow: 2px 0 16px rgba(0,0,0,0.06);
+    overflow: hidden;
+    transition: width 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    width: 64px;
+  }
+  /* Expanded on hover */
+  .sidebar-nav:hover {
+    width: 200px;
+    box-shadow: 4px 0 24px rgba(0,0,0,0.1);
+  }
+
+  /* Logo sidebar */
+  .sb-logo {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--green), var(--green-dark));
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; flex-shrink: 0;
+    transition: transform 0.2s ease, box-shadow 0.2s;
+    margin-bottom: 4px;
+  }
+  .sb-logo:hover { transform: scale(1.08); box-shadow: 0 4px 14px rgba(29,158,117,0.35); }
+  .sb-logo-mark svg { width: 18px; height: 18px; }
+
+  /* Séparateur */
+  .sb-sep {
+    width: 32px; height: 1px;
+    background: var(--border);
+    margin: 10px 0; flex-shrink: 0;
+    transition: width 0.3s;
+  }
+  .sidebar-nav:hover .sb-sep { width: 160px; }
+
+  /* Liens */
+  .sb-links { display: flex; flex-direction: column; gap: 4px; width: 100%; padding: 0 8px; flex: 1; }
+
+  .sb-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 8px; border-radius: 10px;
+    cursor: pointer; position: relative;
+    color: var(--text-muted);
+    transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease;
+    white-space: nowrap; overflow: hidden;
+    min-height: 44px;
+  }
+  .sb-item:hover {
+    background: var(--green-light);
+    color: var(--green-dark);
+    transform: translateX(2px);
+  }
+  .sb-item.active {
+    background: var(--green-light);
+    color: var(--green-dark);
+  }
+  .sb-item.active .sb-icon svg { stroke: var(--green); }
+
+  /* Icône */
+  .sb-icon {
+    width: 44px; height: 44px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    border-radius: 8px;
+    transition: background 0.18s;
+  }
+  .sb-item:hover .sb-icon, .sb-item.active .sb-icon {
+    background: rgba(29,158,117,0.12);
+  }
+  .sb-icon svg { transition: stroke 0.18s; }
+
+  /* Label (visible seulement quand sidebar élargie) */
+  .sb-label {
+    font-size: 13.5px; font-weight: 500;
+    opacity: 0; transform: translateX(-8px);
+    transition: opacity 0.2s ease 0.05s, transform 0.2s ease 0.05s;
+    pointer-events: none;
+  }
+  .sidebar-nav:hover .sb-label {
+    opacity: 1; transform: translateX(0);
+  }
+
+  /* Badge notification */
+  .sb-badge {
+    position: absolute; top: 6px; right: 6px;
+    background: var(--coral); color: #fff;
+    border-radius: 50%; width: 18px; height: 18px;
+    font-size: 10px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    animation: pulse 1.5s infinite;
+  }
+
+  /* Avatar */
+  .sb-av {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--green), var(--green-dark));
+    color: #fff; font-size: 11px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    transition: transform 0.2s;
+  }
+  .sb-item:hover .sb-av { transform: scale(1.1); }
+
+  /* Déconnexion */
+  .sb-logout { margin-top: 4px; }
+  .sb-logout:hover { background: #FAECE7 !important; color: var(--coral) !important; }
+  .sb-logout:hover .sb-icon svg { stroke: var(--coral) !important; }
+
+  /* Tooltip (quand sidebar fermée) */
+  .sb-item::before {
+    content: attr(title);
+    position: absolute; left: 72px; top: 50%;
+    transform: translateY(-50%);
+    background: #1a202c; color: #fff;
+    font-size: 12px; font-weight: 500;
+    padding: 5px 10px; border-radius: 8px;
+    white-space: nowrap; pointer-events: none;
+    opacity: 0; transition: opacity 0.15s;
+    z-index: 300;
+  }
+  .sb-item:hover::before { opacity: 0; }
+
+  /* Décaler le contenu des pages app quand sidebar visible */
+  .inner-tabs { display: none !important; }
+
+  .page-with-sidebar {
+    margin-left: 64px;
+    transition: margin-left 0.3s ease;
+  }
+
+  /* Mobile — sidebar en bas */
+  @media (max-width: 768px) {
+    #app-sidebar {
+      top: auto; bottom: 0; left: 0; right: 0;
+      width: 100%; height: 64px;
+      animation: slideInBottom 0.35s ease forwards;
+    }
+    @keyframes slideInBottom {
+      from { transform: translateY(80px); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+    .sidebar-nav {
+      flex-direction: row;
+      width: 100% !important;
+      height: 64px;
+      padding: 0 16px;
+      border-right: none;
+      border-top: 1px solid var(--border);
+      box-shadow: 0 -2px 16px rgba(0,0,0,0.06);
+      justify-content: space-around;
+      align-items: center;
+    }
+    .sidebar-nav:hover { width: 100% !important; }
+    .sb-logo { display: none; }
+    .sb-sep { display: none; }
+    .sb-links { flex-direction: row; gap: 0; padding: 0; flex: unset; }
+    .sb-label { display: none; }
+    .sb-item { padding: 8px 14px; flex-direction: column; gap: 3px; min-height: unset; }
+    .sb-item:hover { transform: none; }
+    .sb-avatar-item .sb-icon { width: 32px; height: 32px; }
+    .page-with-sidebar { margin-left: 0; margin-bottom: 64px; }
+    .sb-logout .sb-label { display: none; }
+  }
+
   /* ── Animations supplémentaires boutons & nav ── */
 
   /* Bouton sm */
@@ -801,6 +986,91 @@
 <body>
 
 <!-- ===== NAV ===== -->
+
+<!-- ============================================================
+     SIDEBAR — Navigation verticale gauche (après inscription)
+============================================================ -->
+<div id="app-sidebar" style="display:none;">
+  <nav class="sidebar-nav" id="sidebar-nav">
+
+    <!-- Logo sidebar -->
+    <div class="sb-logo" onclick="goTo('dashboard')" title="Accueil">
+      <div class="sb-logo-mark">
+        <svg viewBox="0 0 16 16" fill="none"><path d="M8 2C5.8 2 4 3.8 4 6C4 7.5 4.8 8.8 6 9.5V11H10V9.5C11.2 8.8 12 7.5 12 6C12 3.8 10.2 2 8 2Z" fill="white"/><path d="M6 12H10V14H6V12Z" fill="white" opacity="0.7"/></svg>
+      </div>
+    </div>
+
+    <!-- Séparateur -->
+    <div class="sb-sep"></div>
+
+    <!-- Liens principaux -->
+    <div class="sb-links">
+
+      <!-- Tableau de bord -->
+      <div class="sb-item" id="sb-dashboard" onclick="goTo('dashboard');setSbActive('sb-dashboard')" title="Tableau de bord">
+        <div class="sb-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/>
+            <rect x="14" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/>
+            <rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/>
+            <rect x="14" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/>
+          </svg>
+        </div>
+        <span class="sb-label">Tableau de bord</span>
+      </div>
+
+      <!-- Matching -->
+      <div class="sb-item" id="sb-matching" onclick="goTo('matching');setSbActive('sb-matching')" title="Matching">
+        <div class="sb-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M17 21V19C17 16.79 15.21 15 13 15H5C2.79 15 1 16.79 1 19V21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            <circle cx="9" cy="9" r="4" stroke="currentColor" stroke-width="1.8"/>
+            <path d="M23 21V19C23 17.13 21.74 15.56 20 15.13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            <path d="M16 3.13C17.74 3.56 19 5.13 19 7C19 8.87 17.74 10.44 16 10.87" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <span class="sb-label">Matching</span>
+        <div class="sb-badge" id="sb-badge-matching">3</div>
+      </div>
+
+      <!-- Médiation -->
+      <div class="sb-item" id="sb-mediation" onclick="goTo('mediation');setSbActive('sb-mediation')" title="Médiation">
+        <div class="sb-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M21 15C21 15.53 20.79 16.04 20.41 16.41C20.04 16.79 19.53 17 19 17H7L3 21V5C3 4.47 3.21 3.96 3.59 3.59C3.96 3.21 4.47 3 5 3H19C19.53 3 20.04 3.21 20.41 3.59C20.79 3.96 21 4.47 21 5V15Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M9 9H15M9 13H12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <span class="sb-label">Médiation</span>
+      </div>
+
+    </div>
+
+    <!-- Séparateur bas -->
+    <div class="sb-sep" style="margin-top:auto;"></div>
+
+    <!-- Avatar utilisateur -->
+    <div class="sb-item sb-avatar-item" id="sb-profile" onclick="goTo('dashboard')" title="Mon profil">
+      <div class="sb-icon">
+        <div class="sb-av" id="sb-user-avatar">AK</div>
+      </div>
+      <span class="sb-label" id="sb-user-name">Mon profil</span>
+    </div>
+
+    <!-- Déconnexion -->
+    <div class="sb-item sb-logout" onclick="userLogout()" title="Se déconnecter">
+      <div class="sb-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path d="M9 21H5C4.47 21 3.96 20.79 3.59 20.41C3.21 20.04 3 19.53 3 19V5C3 4.47 3.21 3.96 3.59 3.59C3.96 3.21 4.47 3 5 3H9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M16 17L21 12L16 7M21 12H9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <span class="sb-label">Déconnexion</span>
+    </div>
+
+  </nav>
+</div>
+
 <nav class="nav" id="main-nav">
   <div class="logo" onclick="goTo('landing')">
     <div class="logo-mark">
@@ -814,11 +1084,8 @@
     <li><a onclick="scrollToSection('section-temoignages')">Témoignages</a></li>
     <li><a onclick="goTo('contact')">Contact</a></li>
   </ul>
-  <ul class="nav-links" id="nav-links-app" style="display:none;">
-    <li><a onclick="goTo('dashboard')">Tableau de bord</a></li>
-    <li><a onclick="goTo('matching')">Matching</a></li>
-    <li><a onclick="goTo('mediation')">Médiation</a></li>
-  </ul>
+  <!-- nav-links-app remplacé par sidebar -->
+  <div id="nav-links-app" style="display:none;"></div>
   <div class="nav-right" id="nav-right-public">
     <button class="btn btn-outline btn-sm" onclick="goTo('connexion')">Se connecter</button>
     <button class="btn btn-primary btn-sm" onclick="goTo('inscription')">S'inscrire</button>
@@ -1643,7 +1910,7 @@
 <!-- ============================
      PAGE : DASHBOARD
 ============================= -->
-<div class="page" id="page-dashboard">
+<div class="page page-with-sidebar" id="page-dashboard">
   <div class="inner-tabs">
     <button class="itab active" onclick="goTo('dashboard')">Tableau de bord</button>
     <button class="itab" onclick="goTo('matching')">Matching</button>
@@ -1773,7 +2040,7 @@
 <!-- ============================
      PAGE : MATCHING
 ============================= -->
-<div class="page" id="page-matching">
+<div class="page page-with-sidebar" id="page-matching">
   <div class="inner-tabs">
     <button class="itab" onclick="goTo('dashboard')">Tableau de bord</button>
     <button class="itab active" onclick="goTo('matching')">Matching</button>
@@ -1865,7 +2132,7 @@
 <!-- ============================
      PAGE : MEDIATION
 ============================= -->
-<div class="page" id="page-mediation">
+<div class="page page-with-sidebar" id="page-mediation">
   <div class="inner-tabs">
     <button class="itab" onclick="goTo('dashboard')">Tableau de bord</button>
     <button class="itab" onclick="goTo('matching')">Matching</button>
@@ -1923,7 +2190,7 @@
 <!-- ============================
      PAGE : PROPOSITION
 ============================= -->
-<div class="page" id="page-proposition">
+<div class="page page-with-sidebar" id="page-proposition">
   <div class="inner-tabs">
     <button class="itab" onclick="goTo('dashboard')">Tableau de bord</button>
     <button class="itab" onclick="goTo('matching')">← Matching</button>
@@ -2139,6 +2406,8 @@ Aminata</textarea>
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById('page-' + page).classList.add('active');
     window.scrollTo(0, 0);
+    // Mettre à jour la sidebar si page app
+    updateSidebarActive(page);
     if (page === 'landing' || page === 'connexion' || page === 'contact') {
       if (page === 'landing') setTimeout(initAnimations, 150);
       document.getElementById('nav-links-public').style.display = '';
@@ -2182,9 +2451,23 @@ Aminata</textarea>
     window._userPrenom = prenom;
     window._userNom    = nom;
 
-    // Afficher zone nav
-    const navUserZone = document.getElementById('nav-user-zone');
-    if (navUserZone) navUserZone.style.display = 'flex';
+    // Masquer la nav top (remplacée par la sidebar)
+    const mainNav = document.getElementById('main-nav');
+    if (mainNav) mainNav.style.display = 'none';
+
+    // Masquer nav-right-public et nav-right-app (sidebar prend le relais)
+    const navRightApp = document.getElementById('nav-right-app');
+    if (navRightApp) navRightApp.style.display = 'none';
+
+    // Afficher la sidebar
+    const sidebar = document.getElementById('app-sidebar');
+    if (sidebar) sidebar.style.display = 'block';
+
+    // Mettre à jour l'avatar dans la sidebar
+    const sbAvatar = document.getElementById('sb-user-avatar');
+    if (sbAvatar) sbAvatar.textContent = initiales;
+    const sbName = document.getElementById('sb-user-name');
+    if (sbName) sbName.textContent = prenom || 'Mon profil';
 
     // Verrouiller le dashboard jusqu'a validation paiement
     activerVerrouDashboard();
@@ -2256,9 +2539,14 @@ Aminata</textarea>
     currentFStep = 1;
     selectedPayment = null;
     photoData = null;
-    // Masquer aussi la zone avatar/déco
-    const navUserZone = document.getElementById('nav-user-zone');
-    if (navUserZone) navUserZone.style.display = 'none';
+    // Masquer la sidebar et remettre la nav top
+    const sidebar = document.getElementById('app-sidebar');
+    if (sidebar) sidebar.style.display = 'none';
+    const mainNav = document.getElementById('main-nav');
+    if (mainNav) mainNav.style.display = '';
+    // Remettre les nav publiques
+    document.getElementById('nav-links-public').style.display = '';
+    document.getElementById('nav-right-public').style.display = '';
     goTo('connexion');
   }
 
@@ -3097,6 +3385,26 @@ Aminata</textarea>
     emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_USER, params)
       .then(function() { console.log('[EMAIL] Email utilisateur envoye:', u.email); })
       .catch(function(e) { console.warn('[EMAIL] Erreur email user:', e); });
+  }
+
+
+  // ===== SIDEBAR =====
+  function setSbActive(id) {
+    document.querySelectorAll('.sb-item').forEach(function(el) {
+      el.classList.remove('active');
+    });
+    var el = document.getElementById(id);
+    if (el) el.classList.add('active');
+  }
+
+  function updateSidebarActive(page) {
+    var map = {
+      'dashboard':   'sb-dashboard',
+      'matching':    'sb-matching',
+      'mediation':   'sb-mediation',
+      'proposition': 'sb-matching',
+    };
+    if (map[page]) setSbActive(map[page]);
   }
 
   // ===== VERROU DASHBOARD =====
