@@ -480,21 +480,108 @@
   .itab.active { color: var(--green); border-bottom-color: var(--green); font-weight: 500; }
 
   /* ======= RESPONSIVE ======= */
+  /* ── Tablette (max 1024px) ── */
+  @media (max-width: 1024px) {
+    .features-grid { grid-template-columns: repeat(2, 1fr); }
+    .testimonials   { grid-template-columns: repeat(2, 1fr); }
+    .dash-grid      { grid-template-columns: 1fr; }
+    .match-grid     { grid-template-columns: 1fr; }
+    .inner-tabs     { overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
+  }
+
+  /* ── Mobile (max 768px) ── */
   @media (max-width: 768px) {
-    .hero h1 { font-size: 34px; }
-    .features-grid { grid-template-columns: 1fr; }
-    .testimonials { grid-template-columns: 1fr; }
-    .metrics { grid-template-columns: 1fr 1fr; }
-    .dash-grid { grid-template-columns: 1fr; }
-    .match-grid { grid-template-columns: 1fr; }
-    .med-grid { grid-template-columns: 1fr; }
-    .stats-bar { flex-wrap: wrap; }
-    .stat { border-right: none; border-bottom: 1px solid var(--border); max-width: 100%; width: 50%; }
-    .fgrid { grid-template-columns: 1fr; }
-    .charte-grid { grid-template-columns: 1fr; }
-    .side-panel { width: 100%; right: -100%; }
+    /* Nav */
+    .nav { padding: 0.85rem 1rem; }
     .nav-links { display: none; }
-    .nav { padding: 0.9rem 1.25rem; }
+    .logo { font-size: 15px; }
+
+    /* Hero */
+    .hero { padding: 4rem 1.25rem 3rem; }
+    .hero h1 { font-size: clamp(26px, 7vw, 36px); }
+    .hero-sub { font-size: 14px; }
+    .hero-btns { flex-direction: column; align-items: center; gap: 10px; }
+    .hero-btns .btn { width: 100%; max-width: 320px; justify-content: center; }
+    .hero-avatars { display: none; }
+
+    /* Stats bar */
+    .stats-bar { flex-wrap: wrap; }
+    .stat { border-right: none; border-bottom: 1px solid var(--border); width: 50%; max-width: none; padding: 1.25rem 1rem; }
+    .stat:last-child { border-bottom: none; }
+    .stat-num { font-size: 26px; }
+
+    /* Sections */
+    .section { padding: 3rem 1.25rem; }
+    .section-title { font-size: clamp(22px, 5vw, 30px); }
+    .features-grid { grid-template-columns: 1fr; gap: 12px; }
+    .steps { flex-direction: column; gap: 1.5rem; }
+    .step-line { display: none; }
+    .testimonials { grid-template-columns: 1fr; }
+    .partners-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .cta-section { padding: 2.5rem 1.25rem; }
+    .cta-section h2 { font-size: 22px; }
+    .cta-section > div { flex-direction: column; align-items: center; }
+    .cta-section .btn { width: 100%; max-width: 320px; justify-content: center; }
+
+    /* Formulaire inscription */
+    .fgrid { grid-template-columns: 1fr; }
+    .factions { flex-direction: column; gap: 10px; }
+    .factions .btn { width: 100%; justify-content: center; }
+    .steps-indicator { overflow-x: auto; padding-bottom: 8px; }
+    .s-label { font-size: 10px; }
+    .fstep { padding: 1.25rem; }
+
+    /* Paiement */
+    #payment-methods { grid-template-columns: 1fr !important; }
+    .pay-screen-loading-recap { padding: 12px; }
+
+    /* Dashboard */
+    .dash-wrap { padding: 1.25rem 1rem; }
+    .dash-hdr { flex-direction: column; gap: 12px; align-items: flex-start; }
+    .dash-hdr > div:last-child { width: 100%; }
+    .dash-hdr .btn { flex: 1; justify-content: center; }
+    .metrics { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .metric { padding: 1rem; }
+    .metric-val { font-size: 22px; }
+    .dash-grid { grid-template-columns: 1fr; }
+    .inner-tabs { padding: 0 1rem; overflow-x: auto; white-space: nowrap; }
+    .itab { font-size: 13px; padding: 10px 14px; }
+
+    /* Matching */
+    .match-grid { grid-template-columns: 1fr; }
+    .match-card { padding: 1rem; }
+
+    /* Médiation */
+    .med-grid { grid-template-columns: 1fr; }
+
+    /* Admin */
+    #admin-user-list .admin-row-meta { display: none; }
+    .admin-stat-card { padding: 14px; }
+
+    /* Contact */
+    #page-contact .info-cards { grid-template-columns: 1fr !important; }
+    #page-contact .form-row   { grid-template-columns: 1fr !important; }
+
+    /* Charte / grilles */
+    .charte-grid { grid-template-columns: 1fr; }
+    .side-panel  { width: 100%; right: -100%; }
+
+    /* Footer */
+    .footer { flex-direction: column; gap: 1rem; text-align: center; padding: 2rem 1.25rem; }
+    .footer-links { flex-wrap: wrap; justify-content: center; }
+  }
+
+  /* ── Petits mobiles (max 480px) ── */
+  @media (max-width: 480px) {
+    .hero h1 { font-size: 24px; }
+    .stat { width: 100%; border-right: none; }
+    .metrics { grid-template-columns: 1fr; }
+    .partners-grid { grid-template-columns: 1fr; }
+    .nav-user-zone { gap: 6px; }
+    #nav-right-app button span { display: none; }
+    .steps-indicator .s-label { display: none; }
+    .admin-stat-card { min-width: 140px; }
+    #page-contact > div { padding: 2rem 1rem; }
   }
   @keyframes spin { to { transform: rotate(360deg); } }
   @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
@@ -515,9 +602,9 @@
   </div>
   <ul class="nav-links" id="nav-links-public">
     <li><a onclick="goTo('landing')">Accueil</a></li>
-    <li><a onclick="scrollTo(0,800)">Fonctionnalités</a></li>
-    <li><a onclick="scrollTo(0,1800)">Témoignages</a></li>
-    <li><a onclick="goTo('landing')">Contact</a></li>
+    <li><a onclick="scrollToSection('section-features')">Fonctionnalités</a></li>
+    <li><a onclick="scrollToSection('section-temoignages')">Témoignages</a></li>
+    <li><a onclick="goTo('contact')">Contact</a></li>
   </ul>
   <ul class="nav-links" id="nav-links-app" style="display:none;">
     <li><a onclick="goTo('dashboard')">Tableau de bord</a></li>
@@ -577,7 +664,7 @@
     <div class="stat"><div class="stat-num">3</div><div class="stat-label">Établissements partenaires</div></div>
   </div>
 
-  <section class="section">
+  <section class="section" id="section-features">
     <div class="section-tag">Fonctionnalités</div>
     <h2 class="section-title">Tout pour bien cohabiter</h2>
     <p class="section-sub">Des outils simples pour trouver un logement, organiser la vie commune et gérer les dépenses en toute transparence.</p>
@@ -706,6 +793,137 @@
   </footer>
   <div style="text-align:center;padding:0.9rem 2rem;border-top:1px solid var(--border);background:var(--gray-50);font-size:12px;color:var(--text-hint);">
     Conçu et développé par <strong style="color:var(--text-muted);font-weight:500;">Siélé Dabila Coulibaly</strong>
+  </div>
+</div>
+
+
+<!-- ============================
+     PAGE : CONTACT / NEWSLETTER
+============================= -->
+<div class="page" id="page-contact">
+  <div style="max-width:800px;margin:0 auto;padding:3rem 1.5rem;">
+
+    <!-- Header -->
+    <div style="text-align:center;margin-bottom:3rem;">
+      <div style="display:inline-flex;align-items:center;gap:8px;background:var(--green-light);border-radius:20px;padding:6px 16px;margin-bottom:1rem;">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 4C2 3.45 2.45 3 3 3H13C13.55 3 14 3.45 14 4V12C14 12.55 13.55 13 13 13H3C2.45 13 2 12.55 2 12V4Z" stroke="#1D9E75" stroke-width="1.3"/><path d="M2 4L8 9L14 4" stroke="#1D9E75" stroke-width="1.3" stroke-linecap="round"/></svg>
+        <span style="font-size:12px;font-weight:600;color:var(--green);">Newsletter & Contact</span>
+      </div>
+      <h1 style="font-family:'DM Serif Display',serif;font-size:clamp(28px,5vw,40px);font-weight:400;color:var(--text);margin-bottom:12px;line-height:1.2;">Restons en contact</h1>
+      <p style="font-size:15px;color:var(--text-muted);max-width:520px;margin:0 auto;line-height:1.75;">
+        Une question, une suggestion ou envie de devenir partenaire ? Écrivez-nous — nous vous répondrons dans les plus brefs délais.
+      </p>
+    </div>
+
+    <!-- Cards info rapide -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:2.5rem;">
+      <div style="background:#fff;border:1px solid var(--border);border-radius:14px;padding:18px 16px;text-align:center;">
+        <div style="width:44px;height:44px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M20 4H4C2.9 4 2 4.9 2 6V18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V6C22 4.9 21.1 4 20 4Z" stroke="#1D9E75" stroke-width="1.6"/><path d="M22 6L12 13L2 6" stroke="#1D9E75" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </div>
+        <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:4px;">Email</div>
+        <div style="font-size:11.5px;color:var(--text-muted);">coulibalysiele324<br/>@gmail.com</div>
+      </div>
+      <div style="background:#fff;border:1px solid var(--border);border-radius:14px;padding:18px 16px;text-align:center;">
+        <div style="width:44px;height:44px;border-radius:50%;background:#E8F4FD;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M6.6 10.8C7.8 13.2 9.8 15.2 12.2 16.4L14 14.6C14.2 14.4 14.6 14.4 14.8 14.6C15.8 15 16.8 15.2 18 15.2C18.6 15.2 19 15.6 19 16.2V18C19 18.6 18.6 19 18 19C10.8 19 5 13.2 5 6C5 5.4 5.4 5 6 5H7.8C8.4 5 8.8 5.4 8.8 6C8.8 7.2 9 8.2 9.4 9.2C9.6 9.4 9.6 9.8 9.4 10L7.6 11.8" stroke="#378ADD" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </div>
+        <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:4px;">Téléphone</div>
+        <div style="font-size:11.5px;color:var(--text-muted);">+225 05 01 21 08 40</div>
+      </div>
+      <div style="background:#fff;border:1px solid var(--border);border-radius:14px;padding:18px 16px;text-align:center;">
+        <div style="width:44px;height:44px;border-radius:50%;background:#F0EDFF;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2C8.13 2 5 5.13 5 9C5 14.25 12 22 12 22C12 22 19 14.25 19 9C19 5.13 15.87 2 12 2Z" stroke="#7C6AF6" stroke-width="1.6"/><circle cx="12" cy="9" r="2.5" stroke="#7C6AF6" stroke-width="1.6"/></svg>
+        </div>
+        <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:4px;">Localisation</div>
+        <div style="font-size:11.5px;color:var(--text-muted);">Bouaké, UAO<br/>Côte d'Ivoire</div>
+      </div>
+    </div>
+
+    <!-- Formulaire principal -->
+    <div style="background:#fff;border:1px solid var(--border);border-radius:20px;padding:2rem;margin-bottom:2rem;">
+      <h2 style="font-family:'DM Serif Display',serif;font-size:20px;font-weight:400;color:var(--text);margin-bottom:4px;">Envoyer un message</h2>
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:1.5rem;">Nous répondons sous 24h ouvrables.</p>
+
+      <!-- Type de message -->
+      <div style="margin-bottom:1.25rem;">
+        <label class="flabel">Je suis</label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;" id="contact-type-group">
+          <button class="contact-type-btn active" onclick="setContactType(this,'etudiant')" style="background:var(--green-light);border:1.5px solid var(--green);color:var(--green);border-radius:20px;padding:6px 14px;font-size:12.5px;font-weight:600;cursor:pointer;transition:all 0.2s;">🎓 Étudiant</button>
+          <button class="contact-type-btn" onclick="setContactType(this,'partenaire')" style="background:#fff;border:1.5px solid var(--border-md);color:var(--text-muted);border-radius:20px;padding:6px 14px;font-size:12.5px;cursor:pointer;transition:all 0.2s;">🤝 Partenaire</button>
+          <button class="contact-type-btn" onclick="setContactType(this,'presse')" style="background:#fff;border:1.5px solid var(--border-md);color:var(--text-muted);border-radius:20px;padding:6px 14px;font-size:12.5px;cursor:pointer;transition:all 0.2s;">📰 Presse / Média</button>
+          <button class="contact-type-btn" onclick="setContactType(this,'autre')" style="background:#fff;border:1.5px solid var(--border-md);color:var(--text-muted);border-radius:20px;padding:6px 14px;font-size:12.5px;cursor:pointer;transition:all 0.2s;">💬 Autre</button>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:1.25rem;">
+        <div class="fgroup">
+          <label class="flabel">Nom complet *</label>
+          <input class="finput" type="text" id="contact-nom" placeholder="Votre nom complet" />
+        </div>
+        <div class="fgroup">
+          <label class="flabel">Email *</label>
+          <input class="finput" type="email" id="contact-email" placeholder="votre@email.com" />
+        </div>
+      </div>
+
+      <div class="fgroup" style="margin-bottom:1.25rem;">
+        <label class="flabel">Objet *</label>
+        <input class="finput" type="text" id="contact-objet" placeholder="Ex: Demande de partenariat, suggestion…" />
+      </div>
+
+      <div class="fgroup" style="margin-bottom:1.25rem;">
+        <label class="flabel">Message *</label>
+        <textarea class="finput" id="contact-message" rows="5" placeholder="Décrivez votre demande, préoccupation ou suggestion…" style="resize:vertical;min-height:120px;"></textarea>
+      </div>
+
+      <!-- Newsletter opt-in -->
+      <div style="display:flex;align-items:flex-start;gap:10px;background:var(--green-light);border-radius:10px;padding:12px 14px;margin-bottom:1.5rem;">
+        <input type="checkbox" id="contact-newsletter" style="width:16px;height:16px;margin-top:2px;accent-color:var(--green);flex-shrink:0;" checked />
+        <label for="contact-newsletter" style="font-size:13px;color:var(--text);cursor:pointer;line-height:1.5;">
+          <strong>S'abonner à la Newsletter CohabiConnect</strong><br/>
+          <span style="color:var(--text-muted);font-size:12px;">Recevez les actualités, nouvelles fonctionnalités et opportunités de logement à Bouaké.</span>
+        </label>
+      </div>
+
+      <div id="contact-error" style="display:none;background:#FAECE7;border-radius:10px;padding:10px 14px;font-size:12.5px;color:var(--coral);margin-bottom:1rem;"></div>
+
+      <div id="contact-success" style="display:none;background:#F0FFF9;border:1px solid #b2e8d5;border-radius:12px;padding:16px 18px;text-align:center;">
+        <div style="font-size:28px;margin-bottom:8px;">🎉</div>
+        <div style="font-size:15px;font-weight:600;color:var(--green);margin-bottom:4px;">Message envoyé !</div>
+        <div style="font-size:13px;color:var(--text-muted);">Nous vous répondrons dans les 24h. Merci !</div>
+      </div>
+
+      <button id="contact-submit-btn" onclick="soumettreContact()" class="btn btn-primary" style="width:100%;justify-content:center;font-size:14px;padding:13px;">
+        Envoyer le message →
+      </button>
+    </div>
+
+    <!-- Section Newsletter seule -->
+    <div style="background:linear-gradient(135deg,#1D9E75,#0f6b52);border-radius:20px;padding:2rem;text-align:center;color:white;">
+      <div style="font-size:28px;margin-bottom:10px;">📬</div>
+      <h3 style="font-family:'DM Serif Display',serif;font-size:20px;font-weight:400;margin-bottom:8px;">Restez informé(e)</h3>
+      <p style="font-size:13.5px;color:rgba(255,255,255,0.8);max-width:380px;margin:0 auto 1.25rem;line-height:1.65;">
+        Abonnez-vous pour recevoir les offres de logement, les actualités de CohabiConnect et les conseils de cohabitation.
+      </p>
+      <div style="display:flex;gap:10px;max-width:400px;margin:0 auto;flex-wrap:wrap;">
+        <input type="email" id="newsletter-email" placeholder="votre@email.com"
+          style="flex:1;min-width:200px;background:rgba(255,255,255,0.15);border:1.5px solid rgba(255,255,255,0.3);border-radius:10px;padding:10px 14px;font-size:13.5px;color:white;outline:none;"
+          onkeydown="if(event.key==='Enter') abonnerNewsletter()" />
+        <button onclick="abonnerNewsletter()" style="background:white;color:var(--green);border:none;border-radius:10px;padding:10px 20px;font-size:13.5px;font-weight:700;cursor:pointer;white-space:nowrap;">
+          S'abonner
+        </button>
+      </div>
+      <div id="newsletter-msg" style="display:none;margin-top:10px;font-size:12.5px;color:rgba(255,255,255,0.9);"></div>
+    </div>
+
+    <!-- Retour -->
+    <div style="text-align:center;margin-top:2rem;">
+      <button onclick="goTo('landing')" class="btn btn-outline" style="font-size:13px;">
+        ← Retour à l'accueil
+      </button>
+    </div>
+
   </div>
 </div>
 
@@ -1713,7 +1931,7 @@ Aminata</textarea>
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById('page-' + page).classList.add('active');
     window.scrollTo(0, 0);
-    if (page === 'landing' || page === 'connexion') {
+    if (page === 'landing' || page === 'connexion' || page === 'contact') {
       document.getElementById('nav-links-public').style.display = '';
       document.getElementById('nav-links-app').style.display = 'none';
       document.getElementById('nav-right-public').style.display = '';
@@ -2778,6 +2996,126 @@ Aminata</textarea>
   function fermerVerrou() {
     const overlay = document.getElementById('dash-lock-overlay');
     if (overlay) overlay.style.display = 'none';
+  }
+
+
+  // ===== CONTACT & NEWSLETTER =====
+  var contactType = 'etudiant';
+
+  function setContactType(el, type) {
+    contactType = type;
+    document.querySelectorAll('.contact-type-btn').forEach(function(b) {
+      b.style.background = '#fff';
+      b.style.border = '1.5px solid var(--border-md)';
+      b.style.color = 'var(--text-muted)';
+      b.style.fontWeight = '400';
+    });
+    el.style.background = 'var(--green-light)';
+    el.style.border = '1.5px solid var(--green)';
+    el.style.color = 'var(--green)';
+    el.style.fontWeight = '600';
+  }
+
+  function soumettreContact() {
+    var nom     = (document.getElementById('contact-nom')?.value     || '').trim();
+    var email   = (document.getElementById('contact-email')?.value   || '').trim();
+    var objet   = (document.getElementById('contact-objet')?.value   || '').trim();
+    var message = (document.getElementById('contact-message')?.value || '').trim();
+    var newsletter = document.getElementById('contact-newsletter')?.checked;
+    var errEl   = document.getElementById('contact-error');
+    var sucEl   = document.getElementById('contact-success');
+    var btn     = document.getElementById('contact-submit-btn');
+
+    // Validation
+    if (!nom || !email || !objet || !message) {
+      errEl.textContent = 'Veuillez remplir tous les champs obligatoires (*)';
+      errEl.style.display = 'block';
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      errEl.textContent = 'Adresse email invalide.';
+      errEl.style.display = 'block';
+      return;
+    }
+    errEl.style.display = 'none';
+
+    // Envoi via EmailJS
+    btn.textContent = 'Envoi en cours…';
+    btn.disabled = true;
+
+    if (typeof emailjs !== 'undefined') {
+      emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+      emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ADMIN, {
+        to_email:    'coulibalysiele324@gmail.com',
+        nom_complet: nom,
+        email_user:  email,
+        telephone:   'Contact',
+        etablissement: contactType,
+        role:        contactType,
+        operateur:   objet,
+        reference:   newsletter ? 'Newsletter: OUI' : 'Newsletter: NON',
+        montant:     message,
+        date:        new Date().toLocaleDateString('fr-FR', {day:'2-digit', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit'})
+      }).then(function() {
+        sucEl.style.display = 'block';
+        btn.style.display = 'none';
+        if (newsletter) {
+          sauvegarderAbonne(email, nom);
+        }
+      }).catch(function() {
+        // Fallback: sauvegarder localement quand meme
+        sauvegarderMessageContact(nom, email, objet, message, newsletter);
+        sucEl.style.display = 'block';
+        btn.style.display = 'none';
+      });
+    } else {
+      sauvegarderMessageContact(nom, email, objet, message, newsletter);
+      sucEl.style.display = 'block';
+      btn.style.display = 'none';
+    }
+  }
+
+  function abonnerNewsletter() {
+    var email = (document.getElementById('newsletter-email')?.value || '').trim();
+    var msgEl = document.getElementById('newsletter-msg');
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      msgEl.textContent = 'Veuillez entrer une adresse email valide.';
+      msgEl.style.color = '#fca5a5';
+      msgEl.style.display = 'block';
+      return;
+    }
+    sauvegarderAbonne(email, '');
+    msgEl.textContent = '✓ Vous êtes abonné(e) ! Merci.';
+    msgEl.style.color = 'rgba(255,255,255,0.95)';
+    msgEl.style.display = 'block';
+    document.getElementById('newsletter-email').value = '';
+  }
+
+  function sauvegarderAbonne(email, nom) {
+    try {
+      var abonnes = JSON.parse(localStorage.getItem('cci_newsletter') || '[]');
+      if (!abonnes.find(function(a) { return a.email === email; })) {
+        abonnes.push({ email: email, nom: nom, date: new Date().toISOString() });
+        localStorage.setItem('cci_newsletter', JSON.stringify(abonnes));
+      }
+    } catch(e) {}
+  }
+
+  function sauvegarderMessageContact(nom, email, objet, message, newsletter) {
+    try {
+      var msgs = JSON.parse(localStorage.getItem('cci_messages') || '[]');
+      msgs.push({ nom: nom, email: email, objet: objet, message: message, newsletter: newsletter, date: new Date().toISOString(), type: contactType });
+      localStorage.setItem('cci_messages', JSON.stringify(msgs));
+    } catch(e) {}
+  }
+
+  // Scroll smooth vers une section de la landing
+  function scrollToSection(id) {
+    goTo('landing');
+    setTimeout(function() {
+      var el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 150);
   }
 
   // Init
