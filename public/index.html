@@ -870,14 +870,14 @@
         <div class="fgroup full"><label class="flabel">Adresse email</label>
           <div style="position:relative;">
             <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:15px;pointer-events:none;">✉️</span>
-            <input class="finput" type="email" placeholder="aminata.kone@uao.edu.ci" style="padding-left:36px;" />
+            <input class="finput" type="email" id="field-email" placeholder="aminata.kone@uao.edu.ci" style="padding-left:36px;" />
           </div>
           <span style="font-size:11px;color:var(--text-hint);margin-top:3px;">Utilisée pour la connexion et les notifications</span>
         </div>
         <div class="fgroup"><label class="flabel">Téléphone</label>
           <div style="position:relative;">
             <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none;">📞</span>
-            <input class="finput" type="tel" placeholder="+225 07 XX XX XX XX" style="padding-left:36px;" />
+            <input class="finput" type="tel" id="field-tel" placeholder="+225 07 XX XX XX XX" style="padding-left:36px;" />
           </div>
         </div>
         <div class="fgroup"><label class="flabel">Contact WhatsApp</label>
@@ -890,7 +890,7 @@
         <div class="fgroup full" style="position:relative;"><label class="flabel">Établissement</label>
           <div style="position:relative;">
             <svg style="position:absolute;left:12px;top:50%;transform:translateY(-50%);width:16px;height:16px;pointer-events:none;" viewBox="0 0 24 24" fill="none"><path d="M3 10L12 3L21 10V20C21 20.55 20.55 21 20 21H15V15H9V21H4C3.45 21 3 20.55 3 20V10Z" stroke="#888780" stroke-width="1.5" stroke-linejoin="round"/></svg>
-            <input class="finput" type="text" id="etablissement-input" placeholder="Tapez ou choisissez votre établissement…" style="padding-left:36px;padding-right:36px;" autocomplete="off" oninput="filterEtablissements(this.value)" onfocus="showSuggestions()" onblur="setTimeout(hideSuggestions, 200)" />
+            <input class="finput" type="text" id="field-etab" data-old-id="etablissement-input" placeholder="Tapez ou choisissez votre établissement…" style="padding-left:36px;padding-right:36px;" autocomplete="off" oninput="filterEtablissements(this.value)" onfocus="showSuggestions()" onblur="setTimeout(hideSuggestions, 200)" />
             <svg id="etab-chevron" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);width:14px;height:14px;pointer-events:none;transition:transform 0.2s;" viewBox="0 0 14 14" fill="none"><path d="M3 5L7 9L11 5" stroke="#888780" stroke-width="1.5" stroke-linecap="round"/></svg>
           </div>
           <div id="etab-suggestions" style="display:none;position:absolute;z-index:999;background:#fff;border:1px solid var(--border-md);border-radius:var(--radius-md);box-shadow:var(--shadow-md);overflow:hidden;width:100%;top:calc(100% - 4px);left:0;max-height:240px;overflow-y:auto;"></div>
@@ -1903,6 +1903,9 @@ Aminata</textarea>
         document.getElementById('pay-success-op').textContent = info.name;
         document.getElementById('pay-success-phone').textContent = phone;
         document.getElementById('pay-success-date').textContent = dateStr;
+
+        // === Enregistrer la demande dans l'espace admin ===
+        enregistrerDemandeAdmin(ref, info.name, phone, now);
       }
     }, 900);
   }
@@ -2065,6 +2068,7 @@ Aminata</textarea>
       adminLoggedIn = true;
       document.getElementById('admin-auth-overlay').style.display = 'none';
       document.getElementById('page-admin').style.display = 'block';
+      chargerDemandesLocalStorage();
       adminRenderList();
       adminRenderNotifs();
     } else {
@@ -2116,7 +2120,31 @@ Aminata</textarea>
   }
 
   // ---- Rendu liste ----
+  function chargerDemandesLocalStorage() {
+    try {
+      const stored = JSON.parse(localStorage.getItem('cci_demandes') || '[]');
+      stored.forEach(function(u) {
+        if (!adminUsers.find(function(x) { return x.id === u.id; })) {
+          adminUsers.push(u);
+        } else {
+          // Mettre a jour statut si change
+          const idx = adminUsers.findIndex(function(x) { return x.id === u.id; });
+          if (adminUsers[idx].statut === 'pending' && u.statut !== 'pending') {
+            adminUsers[idx] = u;
+          }
+        }
+      });
+    } catch(e) { console.warn('[CCI] Erreur lecture localStorage'); }
+  }
+
+  function sauvegarderDemandesLocalStorage() {
+    try {
+      localStorage.setItem('cci_demandes', JSON.stringify(adminUsers));
+    } catch(e) {}
+  }
+
   function adminRenderList() {
+    chargerDemandesLocalStorage();
     const search = (document.getElementById('admin-search').value || '').toLowerCase();
     let list = adminUsers.filter(u => {
       const matchFilter = adminFilter === 'all' || u.statut === adminFilter;
@@ -2204,6 +2232,7 @@ Aminata</textarea>
     u.validatedAt = new Date().toISOString();
     adminRenderList();
     adminRenderNotifs();
+    sauvegarderDemandesLocalStorage();
     adminShowToast('✓ Inscription de ' + u.nom + ' validée avec succès !', '#1D9E75');
     // Ouvrir aperçu email de confirmation
     openEmailModal(u);
@@ -2307,6 +2336,7 @@ Aminata</textarea>
     u.rejectedAt = new Date().toISOString();
     adminRenderList();
     adminRenderNotifs();
+    sauvegarderDemandesLocalStorage();
     adminShowToast('✗ Inscription de ' + u.nom + ' rejetée.', '#f87171');
   }
 
@@ -2470,6 +2500,62 @@ Aminata</textarea>
 
 
 
+
+  // ===== ENREGISTREMENT DEMANDE ADMIN =====
+  // Appelee automatiquement apres le paiement de l'utilisateur
+  function enregistrerDemandeAdmin(ref, operateur, telephone, dateObj) {
+
+    // Recuperer les infos du formulaire
+    const prenom        = (document.getElementById('field-prenom')?.value || '').trim();
+    const nom           = (document.getElementById('field-nom')?.value   || '').trim();
+    const email         = (document.getElementById('field-email')?.value || '').trim();
+    const etablissement = (document.getElementById('field-etab')?.value  || '').trim();
+    const role          = window._selectedRole || 'Chercheur';
+
+    const nouvelUser = {
+      id:            'USR-' + Math.random().toString(36).substr(2,6).toUpperCase(),
+      nom:           (prenom + ' ' + nom).trim() || 'Utilisateur',
+      email:         email || 'non-renseigne@cci.ci',
+      tel:           telephone,
+      operateur:     operateur,
+      ref:           ref,
+      montant:       2000,
+      role:          role,
+      etablissement: etablissement || 'Non renseigne',
+      statut:        'pending',
+      date:          dateObj.toISOString(),
+      emailSent:     false
+    };
+
+    // Sauvegarder dans localStorage (accessible depuis tous les onglets)
+    try {
+      const existing = JSON.parse(localStorage.getItem('cci_demandes') || '[]');
+      existing.push(nouvelUser);
+      localStorage.setItem('cci_demandes', JSON.stringify(existing));
+      console.log('[CCI] Demande enregistree dans localStorage:', ref);
+    } catch(e) {
+      console.warn('[CCI] localStorage indisponible, stockage memoire uniquement');
+      adminUsers.push(nouvelUser);
+    }
+
+    // Aussi en memoire si admin ouvert dans meme onglet
+    adminUsers.push(nouvelUser);
+    if (typeof adminRenderList   === 'function') adminRenderList();
+    if (typeof adminRenderNotifs === 'function') adminRenderNotifs();
+    if (typeof adminUpdateStats  === 'function') adminUpdateStats();
+    afficherBadgeAdmin();
+  }
+
+  // Badge visuel dans la nav admin (indicateur cloche)
+  function afficherBadgeAdmin() {
+    // Le badge est deja gere par adminRenderNotifs
+    // Ici on s'assure juste que le compteur est visible
+    const cntEl = document.getElementById('admin-notif-count');
+    if (cntEl) {
+      const pending = adminUsers.filter(function(u){ return u.statut === 'pending'; }).length;
+      cntEl.style.display = pending > 0 ? 'block' : 'none';
+    }
+  }
 
   // ===== VERROU DASHBOARD =====
   // paymentValidated = true quand l'admin a confirme
