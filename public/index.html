@@ -64,6 +64,7 @@
     display: flex; justify-content: space-between; align-items: center;
     padding: 0.9rem 2.5rem;
     background: rgba(255,255,255,0.95);
+    animation: fadeInDown 0.5s ease forwards;
     backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--border);
   }
@@ -71,7 +72,10 @@
     display: flex; align-items: center; gap: 10px;
     font-size: 16px; font-weight: 500; color: var(--text);
     text-decoration: none; cursor: pointer;
+  
+    transition: transform 0.2s ease, opacity 0.2s;
   }
+  .logo:hover { transform: scale(1.04); opacity: 0.85; }
   .logo-mark {
     width: 30px; height: 30px; background: var(--green);
     border-radius: 8px; display: flex; align-items: center; justify-content: center;
@@ -80,19 +84,66 @@
   .nav-links { display: flex; gap: 2rem; list-style: none; }
   .nav-links a {
     font-size: 14px; color: var(--text-muted); text-decoration: none;
-    transition: color 0.15s; cursor: pointer;
+    cursor: pointer; position: relative; padding-bottom: 3px;
+    transition: color 0.2s ease;
   }
-  .nav-links a:hover { color: var(--text); }
+  .nav-links a::after {
+    content: '';
+    position: absolute; bottom: 0; left: 50%; right: 50%;
+    height: 2px; border-radius: 2px;
+    background: var(--green);
+    transition: left 0.25s ease, right 0.25s ease;
+  }
+  .nav-links a:hover { color: var(--green-dark); }
+  .nav-links a:hover::after { left: 0; right: 0; }
   .nav-right { display: flex; gap: 10px; align-items: center; }
 
-  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 20px; border-radius: var(--radius-md); font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.15s; border: none; font-family: 'DM Sans', sans-serif; }
-  .btn-primary { background: var(--green); color: #fff; }
-  .btn-primary:hover { background: var(--green-dark); }
-  .btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border-md); }
-  .btn-outline:hover { background: var(--gray-50); }
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 20px; border-radius: var(--radius-md); font-size: 14px; font-weight: 500; cursor: pointer;
+    transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+    border: none; position: relative; overflow: hidden;
+  }
+  /* Ripple effect sur tous les boutons */
+  .btn::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: rgba(255,255,255,0.18);
+    border-radius: inherit;
+    opacity: 0;
+    transform: scale(0);
+    transition: transform 0.4s ease, opacity 0.4s ease;
+  }
+  .btn:active::after { transform: scale(2.5); opacity: 1; transition: 0s; }
+  .btn:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; }
+  .btn-dummy { display: inline-flex; align-items: center; gap: 6px; padding: 9px 20px; border-radius: var(--radius-md); font-size: 14px; font-weight: 500; cursor: pointer; border: none; font-family: 'DM Sans', sans-serif; }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--green) 0%, var(--green-dark) 100%);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(29,158,117,0.25);
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 6px 20px rgba(29,158,117,0.40);
+    filter: brightness(1.07);
+  }
+  .btn-primary:active { transform: translateY(0) scale(0.98); box-shadow: 0 2px 6px rgba(29,158,117,0.2); }
+  .btn-outline {
+    background: transparent; color: var(--text);
+    border: 1.5px solid var(--border-md);
+    transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .btn-outline:hover {
+    background: var(--green-light);
+    border-color: var(--green);
+    color: var(--green-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(29,158,117,0.15);
+  }
+  .btn-outline:active { transform: translateY(0); }
   .btn-ghost { background: transparent; color: var(--text-muted); border: none; }
   .btn-ghost:hover { color: var(--text); }
-  .btn-lg { padding: 12px 28px; font-size: 15px; border-radius: var(--radius-lg); }
+  .btn-lg { padding: 12px 28px; font-size: 15px; border-radius: var(--radius-lg); 
+    letter-spacing: 0.01em;
+  }
   .btn-sm { padding: 7px 14px; font-size: 13px; border-radius: var(--radius-sm); }
   .btn-danger { background: #FEE2E2; color: #991B1B; border: none; }
   .btn-danger:hover { background: #FECACA; }
@@ -106,6 +157,7 @@
     max-width: 720px; margin: 0 auto; text-align: center;
     position: relative;
   }
+  .nav-avatar:hover { transform: scale(1.1) rotate(5deg); box-shadow: 0 0 0 3px rgba(29,158,117,0.2); }
   /* Particules décoratives derrière le hero */
   .hero::before {
     content: '';
@@ -490,7 +542,7 @@
 
   /* ======= TABS NAV INTERNE ======= */
   .inner-tabs { display: flex; border-bottom: 1px solid var(--border); background: #fff; padding: 0 2.5rem; overflow-x: auto; }
-  .itab { padding: 0.9rem 1.25rem; font-size: 14px; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; background: none; border-top: none; border-left: none; border-right: none; white-space: nowrap; font-family: 'DM Sans', sans-serif; transition: color 0.15s; }
+  .itab { padding: 0.9rem 1.25rem; font-size: 14px; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; background: none; border-top: none; border-left: none; border-right: none; white-space: nowrap; font-family: 'DM Sans', sans-serif; transition: color 0.2s ease, border-color 0.2s ease, transform 0.15s ease; color 0.15s; }
   .itab:hover { color: var(--text); }
   .itab.active { color: var(--green); border-bottom-color: var(--green); font-weight: 500; }
 
@@ -598,6 +650,80 @@
     .admin-stat-card { min-width: 140px; }
     #page-contact > div { padding: 2rem 1rem; }
   }
+
+  /* ── Animations supplémentaires boutons & nav ── */
+
+  /* Bouton sm */
+  .btn-sm:hover { transform: translateY(-1px); box-shadow: 0 3px 10px rgba(0,0,0,0.1); }
+
+  /* Bouton nav Se connecter / S'inscrire */
+  #nav-right-public .btn { transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1); }
+  #nav-right-public .btn:hover { transform: translateY(-2px); }
+
+  /* Cartes de paiement — scale au clic */
+  .payment-card { transition: border 0.2s, background 0.2s, transform 0.15s, box-shadow 0.2s !important; }
+  .payment-card:hover { transform: translateY(-3px); box-shadow: 0 6px 18px rgba(0,0,0,0.08); }
+  .payment-card:active { transform: scale(0.97); }
+
+  /* Boutons admin */
+  #page-admin button { transition: all 0.18s ease; }
+  #page-admin .btn-primary:hover { transform: translateY(-1px); }
+
+  /* Filter buttons admin */
+  .admin-filter-btn { transition: all 0.18s ease !important; }
+  .admin-filter-btn:hover { transform: translateY(-1px); }
+
+  /* Inner tabs app — slide indicator */
+  .inner-tabs {
+    position: relative;
+  }
+  .itab.active {
+    color: var(--green) !important;
+    border-bottom-color: var(--green) !important;
+    font-weight: 600;
+    animation: fadeInUp 0.3s ease;
+  }
+
+  /* Bouton déconnexion nav */
+  #nav-user-zone button {
+    transition: border-color 0.2s, color 0.2s, background 0.2s, transform 0.15s !important;
+  }
+  #nav-user-zone button:hover { transform: translateY(-1px); }
+
+  /* Boutons inscription (steps) */
+  .factions .btn { transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1); }
+
+  /* Boutons matching / médiation */
+  .btn-pending-p, .btn-pending-o {
+    transition: all 0.2s ease;
+  }
+  .btn-pending-p:hover { transform: translateY(-1px); filter: brightness(1.05); }
+  .btn-pending-o:hover { transform: translateY(-1px); filter: brightness(0.95); }
+
+  /* CTA section boutons */
+  .cta-section .btn { transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); }
+  .cta-section .btn:hover { transform: translateY(-3px) scale(1.03); }
+
+  /* Feat card hover amélioré */
+  .feat-card { transition: box-shadow 0.25s ease, transform 0.25s ease; }
+  .feat-card:hover { transform: translateY(-5px); box-shadow: 0 12px 32px rgba(0,0,0,0.1) !important; }
+
+  /* Testi hover */
+  .testi { transition: transform 0.25s ease, box-shadow 0.25s ease; }
+  .testi:hover { transform: translateY(-4px); box-shadow: 0 10px 28px rgba(0,0,0,0.08); }
+
+  /* Steps hover */
+  .step { transition: transform 0.25s ease; }
+  .step:hover { transform: translateY(-4px); }
+
+  /* Radio options inscription */
+  .radio-opt { transition: all 0.18s ease; }
+  .radio-opt:hover { transform: scale(1.02); }
+
+  /* Partner cards */
+  .partner-card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+  .partner-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
+
   @keyframes spin { to { transform: rotate(360deg); } }
 
   /* ── Animations landing ── */
