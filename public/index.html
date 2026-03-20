@@ -195,18 +195,103 @@
   .mini-av { width: 26px; height: 26px; border-radius: 50%; border: 2px solid #fff; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 500; margin-left: -6px; }
   .mini-av:first-child { margin-left: 0; }
 
+  /* ── Stats bar ── */
   .stats-bar {
-    display: flex; justify-content: center;
-    border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
-    background: var(--gray-50);
+    display: flex; justify-content: center; flex-wrap: wrap;
+    background: #fff;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
   }
-  .stat { flex: 1; max-width: 220px; text-align: center; padding: 2rem 1.5rem; border-right: 1px solid var(--border); transition: background 0.2s; }
-  .stat:hover { background: var(--green-light); }
-  .stat:last-child { border-right: none; }
-  .stat-num { font-family: 'DM Serif Display', serif; font-size: 32px; color: var(--text); }
-  .stat-label { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
 
-  .section { padding: 5rem 2.5rem; max-width: 960px; margin: 0 auto; }
+  .stat-card {
+    flex: 1; min-width: 160px; max-width: 240px;
+    text-align: center;
+    padding: 2.25rem 1.5rem;
+    border-right: 1px solid var(--border);
+    position: relative; overflow: hidden;
+    cursor: default;
+    transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    opacity: 0;
+    animation: statReveal 0.6s ease forwards;
+  }
+  @keyframes statReveal {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .stat-card:nth-child(1) { animation-delay: 0.1s; }
+  .stat-card:nth-child(2) { animation-delay: 0.25s; }
+  .stat-card:nth-child(3) { animation-delay: 0.4s; }
+  .stat-card:nth-child(4) { animation-delay: 0.55s; }
+  .stat-card:last-child  { border-right: none; }
+
+  /* Fond coloré au hover */
+  .stat-card::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, var(--stat-color, #1D9E75) 0%, transparent 80%);
+    opacity: 0;
+    transition: opacity 0.35s ease;
+  }
+  .stat-card:hover::before { opacity: 0.06; }
+  .stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 28px rgba(0,0,0,0.07);
+    z-index: 2;
+  }
+
+  /* Icône */
+  .stat-icon-wrap {
+    display: flex; justify-content: center; margin-bottom: 12px;
+    transition: transform 0.3s ease;
+  }
+  .stat-card:hover .stat-icon-wrap { transform: scale(1.12) rotate(-4deg); }
+  .stat-icon { width: 44px; height: 44px; }
+
+  /* Numéro */
+  .stat-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 38px; font-weight: 400;
+    color: var(--text);
+    line-height: 1;
+    transition: color 0.3s ease, transform 0.3s ease;
+    position: relative; z-index: 1;
+  }
+  .stat-card:hover .stat-num { transform: scale(1.08); }
+
+  /* Barre de progression */
+  .stat-progress-wrap {
+    width: 60px; height: 3px;
+    background: var(--border);
+    border-radius: 4px;
+    margin: 10px auto 10px;
+    overflow: hidden;
+  }
+  .stat-progress {
+    height: 100%; width: 0%;
+    border-radius: 4px;
+    transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Label */
+  .stat-label {
+    font-size: 12.5px; color: var(--text-muted);
+    line-height: 1.4; position: relative; z-index: 1;
+    transition: color 0.3s;
+  }
+  .stat-card:hover .stat-label { color: var(--text); }
+
+  /* Particule décorative */
+  .stat-card::after {
+    content: '';
+    position: absolute; right: -20px; top: -20px;
+    width: 80px; height: 80px; border-radius: 50%;
+    background: var(--stat-color, #1D9E75);
+    opacity: 0.04;
+    transition: transform 0.4s ease, opacity 0.4s;
+  }
+  .stat-card:hover::after { transform: scale(1.8); opacity: 0.07; }
+
+.section { padding: 5rem 2.5rem; max-width: 960px; margin: 0 auto; }
   .section-tag { font-size: 12px; font-weight: 500; color: var(--green); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; text-align: center; }
   .section-title { font-family: 'DM Serif Display', serif; font-size: 36px; font-weight: 400; color: var(--text); margin-bottom: 1rem; letter-spacing: -0.01em; line-height: 1.2; text-align: center; }
   .section-sub { font-size: 16px; color: var(--text-muted); line-height: 1.75; max-width: 520px; margin-bottom: 3rem; text-align: center; margin-left: auto; margin-right: auto; }
@@ -992,6 +1077,112 @@
     .carousel-btn { width: 36px; height: 36px; }
   }
 
+
+  /* ============================================================
+     CARROUSEL TÉMOIGNAGES
+  ============================================================ */
+  .testi-carousel-wrap {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: relative;
+    max-width: 720px;
+    margin: 0 auto 1.5rem;
+  }
+
+  .testi-track-wrap {
+    flex: 1;
+    overflow: hidden;
+    border-radius: 24px;
+  }
+
+  .testi-track {
+    display: flex;
+    transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
+  }
+
+  .testi-slide {
+    min-width: 100%;
+    padding: 0 8px;
+  }
+
+  .testi-big {
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: 24px;
+    padding: 2.5rem 2.5rem 2rem;
+    text-align: left;
+    position: relative;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.06);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .testi-big:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 48px rgba(0,0,0,0.1);
+  }
+
+  /* Étoiles */
+  .testi-stars {
+    color: #FCD34D;
+    font-size: 18px;
+    letter-spacing: 2px;
+    margin-bottom: 1rem;
+  }
+
+  /* Citation */
+  .testi-big .testi-quote {
+    font-size: 16px;
+    line-height: 1.8;
+    color: var(--text);
+    font-style: italic;
+    margin-bottom: 1.5rem;
+    position: relative;
+  }
+
+  /* Auteur */
+  .testi-big .testi-author {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--border);
+  }
+  .testi-big .testi-avatar {
+    width: 46px; height: 46px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .testi-big .testi-name {
+    font-size: 14px; font-weight: 600; color: var(--text);
+  }
+  .testi-big .testi-meta {
+    font-size: 12.5px; color: var(--text-muted); margin-top: 2px;
+  }
+
+  /* Guillemet déco */
+  .testi-quote-deco {
+    position: absolute;
+    top: -10px; left: 80px;
+    font-size: 140px;
+    font-family: 'DM Serif Display', serif;
+    color: var(--green);
+    opacity: 0.06;
+    line-height: 1;
+    pointer-events: none;
+    user-select: none;
+    z-index: 0;
+  }
+
+  @media (max-width: 768px) {
+    .testi-carousel-wrap { gap: 8px; }
+    .testi-big { padding: 1.75rem 1.5rem 1.5rem; }
+    .testi-big .testi-quote { font-size: 14.5px; }
+    .testi-quote-deco { display: none; }
+  }
+
   /* ── Animations supplémentaires boutons & nav ── */
 
   /* Bouton sm */
@@ -1352,10 +1543,66 @@
   </section>
 
   <div class="stats-bar" id="stats-bar">
-    <div class="stat"><div class="stat-num">500+</div><div class="stat-label">Étudiants bénéficiaires</div></div>
-    <div class="stat"><div class="stat-num">40%</div><div class="stat-label">Réduction des charges</div></div>
-    <div class="stat"><div class="stat-num">125+</div><div class="stat-label">Logements partagés</div></div>
-    <div class="stat"><div class="stat-num">3</div><div class="stat-label">Établissements partenaires</div></div>
+
+    <!-- Stat 1 : Étudiants -->
+    <div class="stat stat-card" data-target="500" data-suffix="+" data-color="#1D9E75">
+      <div class="stat-icon-wrap">
+        <svg class="stat-icon" viewBox="0 0 40 40" fill="none">
+          <circle cx="20" cy="20" r="20" fill="rgba(29,158,117,0.1)"/>
+          <circle cx="20" cy="15" r="5" stroke="#1D9E75" stroke-width="1.8"/>
+          <path d="M10 32C10 26.48 14.48 22 20 22C25.52 22 30 26.48 30 32" stroke="#1D9E75" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="stat-num" id="sn-0">0</div>
+      <div class="stat-progress-wrap"><div class="stat-progress" id="sp-0" style="background:#1D9E75"></div></div>
+      <div class="stat-label">Étudiants bénéficiaires</div>
+    </div>
+
+    <!-- Stat 2 : Réduction -->
+    <div class="stat stat-card" data-target="40" data-suffix="%" data-color="#378ADD">
+      <div class="stat-icon-wrap">
+        <svg class="stat-icon" viewBox="0 0 40 40" fill="none">
+          <circle cx="20" cy="20" r="20" fill="rgba(55,138,221,0.1)"/>
+          <path d="M13 27L20 13L27 27" stroke="#378ADD" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M15.5 23H24.5" stroke="#378ADD" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="stat-num" id="sn-1">0</div>
+      <div class="stat-progress-wrap"><div class="stat-progress" id="sp-1" style="background:#378ADD"></div></div>
+      <div class="stat-label">Réduction des charges</div>
+    </div>
+
+    <!-- Stat 3 : Logements -->
+    <div class="stat stat-card" data-target="125" data-suffix="+" data-color="#D97706">
+      <div class="stat-icon-wrap">
+        <svg class="stat-icon" viewBox="0 0 40 40" fill="none">
+          <circle cx="20" cy="20" r="20" fill="rgba(217,119,6,0.1)"/>
+          <path d="M10 22L20 12L30 22" stroke="#D97706" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <rect x="14" y="22" width="12" height="10" rx="2" stroke="#D97706" stroke-width="1.8"/>
+          <rect x="18" y="26" width="4" height="6" rx="1" stroke="#D97706" stroke-width="1.5"/>
+        </svg>
+      </div>
+      <div class="stat-num" id="sn-2">0</div>
+      <div class="stat-progress-wrap"><div class="stat-progress" id="sp-2" style="background:#D97706"></div></div>
+      <div class="stat-label">Logements partagés</div>
+    </div>
+
+    <!-- Stat 4 : Établissements -->
+    <div class="stat stat-card" data-target="3" data-suffix="" data-color="#D4537E">
+      <div class="stat-icon-wrap">
+        <svg class="stat-icon" viewBox="0 0 40 40" fill="none">
+          <circle cx="20" cy="20" r="20" fill="rgba(212,83,126,0.1)"/>
+          <rect x="10" y="14" width="20" height="16" rx="2" stroke="#D4537E" stroke-width="1.8"/>
+          <path d="M15 14V12C15 10.9 15.9 10 17 10H23C24.1 10 25 10.9 25 12V14" stroke="#D4537E" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M10 20H30" stroke="#D4537E" stroke-width="1.5" stroke-dasharray="2 2"/>
+          <circle cx="20" cy="22" r="2" fill="#D4537E"/>
+        </svg>
+      </div>
+      <div class="stat-num" id="sn-3">0</div>
+      <div class="stat-progress-wrap"><div class="stat-progress" id="sp-3" style="background:#D4537E"></div></div>
+      <div class="stat-label">Établissements partenaires</div>
+    </div>
+
   </div>
 
   <section class="section" id="section-features">
@@ -1456,20 +1703,84 @@
     <div class="section-tag reveal">Témoignages</div>
     <h2 class="section-title reveal delay-1">Ce que disent les étudiants</h2>
     <p class="section-sub reveal delay-2">Des centaines d'étudiants ont déjà amélioré leurs conditions de vie grâce à CohabiConnect.</p>
-    <div class="testimonials">
-      <div class="testi reveal-scale delay-2">
-        <p class="testi-quote">"Grâce à CohabiConnect, je paie moitié moins de loyer. Je peux enfin me concentrer sur mes études sans stresser chaque mois."</p>
-        <div class="testi-author"><div class="testi-avatar" style="background:#E1F5EE;color:#0F6E56;">AK</div><div><div class="testi-name">Aminata Koné</div><div class="testi-meta">L2 Droit · UAO</div></div></div>
+
+    <!-- Carrousel témoignages -->
+    <div class="testi-carousel-wrap">
+
+      <!-- Guillemet déco -->
+      <div class="testi-quote-deco" aria-hidden="true">"</div>
+
+      <!-- Bouton précédent -->
+      <button class="carousel-btn testi-prev" onclick="testiPrev()" aria-label="Précédent">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+
+      <!-- Piste -->
+      <div class="testi-track-wrap">
+        <div class="testi-track" id="testi-track">
+
+          <!-- Slide 1 -->
+          <div class="testi-slide">
+            <div class="testi testi-big">
+              <div class="testi-stars">★★★★★</div>
+              <p class="testi-quote">"Grâce à CohabiConnect, je paie moitié moins de loyer. Je peux enfin me concentrer sur mes études sans stresser chaque mois."</p>
+              <div class="testi-author">
+                <div class="testi-avatar" style="background:#E1F5EE;color:#0F6E56;">AK</div>
+                <div>
+                  <div class="testi-name">Aminata Koné</div>
+                  <div class="testi-meta">L2 Droit · UAO Bouaké</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Slide 2 -->
+          <div class="testi-slide">
+            <div class="testi testi-big">
+              <div class="testi-stars">★★★★★</div>
+              <p class="testi-quote">"Le système de gestion des charges est très pratique. Plus de conflits sur qui paie quoi, tout est transparent et équitable."</p>
+              <div class="testi-author">
+                <div class="testi-avatar" style="background:#E6F1FB;color:#185FA5;">KT</div>
+                <div>
+                  <div class="testi-name">Kofi Traoré</div>
+                  <div class="testi-meta">L3 Informatique · UAO Bouaké</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Slide 3 -->
+          <div class="testi-slide">
+            <div class="testi testi-big">
+              <div class="testi-stars">★★★★★</div>
+              <p class="testi-quote">"J'ai trouvé mes colocataires en 3 jours. Le matching est bien fait, on s'entend super bien et l'ambiance est studieuse."</p>
+              <div class="testi-author">
+                <div class="testi-avatar" style="background:#FBEAF0;color:#993556;">FB</div>
+                <div>
+                  <div class="testi-name">Fatou Bamba</div>
+                  <div class="testi-meta">M1 Économie · UAO Bouaké</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
       </div>
-      <div class="testi reveal-scale delay-3">
-        <p class="testi-quote">"Le système de gestion des charges est très pratique. Plus de conflits sur qui paie quoi, tout est transparent."</p>
-        <div class="testi-author"><div class="testi-avatar" style="background:#E6F1FB;color:#185FA5;">KT</div><div><div class="testi-name">Kofi Traoré</div><div class="testi-meta">L3 Informatique · UAO</div></div></div>
-      </div>
-      <div class="testi reveal-scale delay-4">
-        <p class="testi-quote">"J'ai trouvé mes colocataires en 3 jours. Le matching est bien fait, on s'entend super bien et l'ambiance est studieuse."</p>
-        <div class="testi-author"><div class="testi-avatar" style="background:#FBEAF0;color:#993556;">FB</div><div><div class="testi-name">Fatou Bamba</div><div class="testi-meta">M1 Économie · UAO</div></div></div>
-      </div>
+
+      <!-- Bouton suivant -->
+      <button class="carousel-btn testi-next" onclick="testiNext()" aria-label="Suivant">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+
     </div>
+
+    <!-- Dots -->
+    <div class="partners-dots" id="testi-dots">
+      <span class="pdot active" onclick="testiGoTo(0)"></span>
+      <span class="pdot" onclick="testiGoTo(1)"></span>
+      <span class="pdot" onclick="testiGoTo(2)"></span>
+    </div>
+
   </section>
 
 
@@ -4006,25 +4317,66 @@ Aminata</textarea>
   }
 
   function animerStats() {
-    var stats = [
-      { el: document.querySelector('.stat:nth-child(1) .stat-num'), target: 500, suffix: '+' },
-      { el: document.querySelector('.stat:nth-child(2) .stat-num'), target: 40,  suffix: '%' },
-      { el: document.querySelector('.stat:nth-child(3) .stat-num'), target: 125, suffix: '+' },
-      { el: document.querySelector('.stat:nth-child(4) .stat-num'), target: 3,   suffix: '' },
+    var statCards = [
+      { numId: 'sn-0', progId: 'sp-0', target: 500, suffix: '+', color: '#1D9E75', pct: 85 },
+      { numId: 'sn-1', progId: 'sp-1', target: 40,  suffix: '%', color: '#378ADD', pct: 40 },
+      { numId: 'sn-2', progId: 'sp-2', target: 125, suffix: '+', color: '#D97706', pct: 70 },
+      { numId: 'sn-3', progId: 'sp-3', target: 3,   suffix: '',  color: '#D4537E', pct: 100 },
     ];
-    stats.forEach(function(s) {
-      if (!s.el) return;
-      var start = 0;
-      var duration = 1500;
-      var step = duration / s.target;
-      var timer = setInterval(function() {
-        start += Math.ceil(s.target / 60);
-        if (start >= s.target) {
-          start = s.target;
-          clearInterval(timer);
+
+    statCards.forEach(function(s, i) {
+      var numEl  = document.getElementById(s.numId);
+      var progEl = document.getElementById(s.progId);
+      var card   = document.querySelectorAll('.stat-card')[i];
+      if (!numEl) return;
+
+      // Couleur CSS variable sur la carte
+      if (card) card.style.setProperty('--stat-color', s.color);
+
+      // Délai échelonné par carte
+      var delay = i * 180;
+
+      // Compteur animé
+      setTimeout(function() {
+        var start    = 0;
+        var duration = 1800;
+        var steps    = 60;
+        var increment = s.target / steps;
+        var interval = duration / steps;
+
+        var timer = setInterval(function() {
+          start += increment;
+          if (start >= s.target) {
+            start = s.target;
+            clearInterval(timer);
+            // Pulse final sur le numéro
+            numEl.style.transform = 'scale(1.15)';
+            setTimeout(function() { numEl.style.transform = 'scale(1)'; numEl.style.transition = 'transform 0.3s ease'; }, 150);
+          }
+          numEl.textContent = Math.floor(start) + s.suffix;
+        }, interval);
+
+        // Barre de progression animée
+        if (progEl) {
+          setTimeout(function() {
+            progEl.style.width = s.pct + '%';
+          }, 200);
         }
-        s.el.textContent = start + s.suffix;
-      }, step);
+
+        // Couleur du numéro au fur et à mesure
+        if (numEl) {
+          numEl.style.transition = 'color 0.3s ease';
+          setTimeout(function() {
+            numEl.style.color = s.color;
+            setTimeout(function() { numEl.style.color = ''; }, 800);
+          }, duration * 0.6);
+        }
+      }, delay);
+    });
+
+    // Effet shimmer sur les barres
+    document.querySelectorAll('.stat-progress-wrap').forEach(function(wrap) {
+      wrap.style.animation = 'shimmer 2s ease infinite';
     });
   }
 
@@ -4033,6 +4385,53 @@ Aminata</textarea>
     setTimeout(initAnimations, 100);
   }
 
+
+
+  // ===== CARROUSEL TÉMOIGNAGES =====
+  var testiCurrent = 0;
+  var testiTotal   = 3;
+  var testiAuto    = null;
+  var testiPaused  = false;
+
+  function testiGoTo(idx) {
+    testiCurrent = ((idx % testiTotal) + testiTotal) % testiTotal;
+    var track = document.getElementById('testi-track');
+    if (track) track.style.transform = 'translateX(-' + (testiCurrent * 100) + '%)';
+    document.querySelectorAll('#testi-dots .pdot').forEach(function(d, i) {
+      d.classList.toggle('active', i === testiCurrent);
+    });
+  }
+
+  function testiNext() { testiGoTo(testiCurrent + 1); testiResetAuto(); }
+  function testiPrev() { testiGoTo(testiCurrent - 1); testiResetAuto(); }
+
+  function testiResetAuto() {
+    clearInterval(testiAuto);
+    if (!testiPaused) testiStartAuto();
+  }
+
+  function testiStartAuto() {
+    testiAuto = setInterval(function() {
+      if (!testiPaused) testiGoTo(testiCurrent + 1);
+    }, 4000);
+  }
+
+  function initTestiCarousel() {
+    var wrap = document.querySelector('.testi-track-wrap');
+    if (!wrap) return;
+    wrap.addEventListener('mouseenter', function() { testiPaused = true; });
+    wrap.addEventListener('mouseleave', function() { testiPaused = false; });
+    // Swipe mobile
+    var startX = 0;
+    wrap.addEventListener('touchstart', function(e) { startX = e.touches[0].clientX; });
+    wrap.addEventListener('touchend', function(e) {
+      var diff = startX - e.changedTouches[0].clientX;
+      if (Math.abs(diff) > 40) {
+        if (diff > 0) testiNext(); else testiPrev();
+      }
+    });
+    testiStartAuto();
+  }
 
   // ===== CARROUSEL PARTENAIRES =====
   var partnerCurrent = 0;
@@ -4096,6 +4495,7 @@ Aminata</textarea>
   updateCharCount();
   initLandingAnimations();
   initPartnerCarousel();
+  initTestiCarousel();
 </script>
 
   <!-- ============================================================
