@@ -501,6 +501,7 @@
   .fstep { animation: fadeInStep 0.28s ease; }
   @keyframes fadeInStep { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </head>
 <body>
 
@@ -1134,8 +1135,8 @@
         <div class="factions">
           <button class="btn btn-outline" onclick="prevFStep(5)">← Retour</button>
           <button class="btn btn-primary" id="pay-btn" onclick="processPayment()" style="display:flex;align-items:center;gap:8px;">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="4" width="13" height="9" rx="2" stroke="white" stroke-width="1.4"/><path d="M1.5 7H14.5" stroke="white" stroke-width="1.4"/><rect x="4" y="9.5" width="3" height="1.5" rx="0.5" fill="white"/></svg>
-            Payer 2 000 FCFA
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 5.5C2 4.67 2.67 4 3.5 4H12.5C13.33 4 14 4.67 14 5.5V10.5C14 11.33 13.33 12 12.5 12H3.5C2.67 12 2 11.33 2 10.5V5.5Z" stroke="white" stroke-width="1.4"/><path d="M5 8.5L7 10.5L11 6.5" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Paiement Effectu&#233;
           </button>
         </div>
       </div>
@@ -2533,6 +2534,8 @@ Aminata</textarea>
       existing.push(nouvelUser);
       localStorage.setItem('cci_demandes', JSON.stringify(existing));
       console.log('[CCI] Demande enregistree dans localStorage:', ref);
+      // Envoyer email de notification a l'admin
+      envoyerEmailAdmin(nouvelUser);
     } catch(e) {
       console.warn('[CCI] localStorage indisponible, stockage memoire uniquement');
       adminUsers.push(nouvelUser);
@@ -2555,6 +2558,47 @@ Aminata</textarea>
       const pending = adminUsers.filter(function(u){ return u.statut === 'pending'; }).length;
       cntEl.style.display = pending > 0 ? 'block' : 'none';
     }
+  }
+
+
+  // ===== NOTIFICATION EMAIL ADMIN =====
+  // EmailJS — gratuit jusqu a 200 emails/mois
+  // Config : https://www.emailjs.com
+  const EMAILJS_SERVICE_ID  = 'service_cohabiconnect';
+  const EMAILJS_TEMPLATE_ID = 'template_cci_admin';
+  const EMAILJS_PUBLIC_KEY  = '4YafU35KGOv8wj0Vi';
+
+  function envoyerEmailAdmin(userData) {
+    if (typeof emailjs === 'undefined') {
+      console.warn('[EMAIL] EmailJS non charge');
+      return;
+    }
+
+    const params = {
+      to_email:      'coulibalysiele324@gmail.com',
+      nom_complet:   userData.nom,
+      email_user:    userData.email,
+      telephone:     userData.tel,
+      etablissement: userData.etablissement,
+      operateur:     userData.operateur,
+      reference:     userData.ref,
+      montant:       '2 000 FCFA',
+      date:          new Date().toLocaleDateString('fr-FR', {
+                       day: '2-digit', month: 'long', year: 'numeric',
+                       hour: '2-digit', minute: '2-digit'
+                     }),
+      role:          userData.role
+    };
+
+    emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+
+    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, params)
+      .then(function() {
+        console.log('[EMAIL] Notification admin envoyee avec succes');
+      })
+      .catch(function(err) {
+        console.warn('[EMAIL] Erreur envoi:', err);
+      });
   }
 
   // ===== VERROU DASHBOARD =====
