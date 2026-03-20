@@ -104,8 +104,22 @@
   .hero {
     padding: 6rem 2.5rem 5rem;
     max-width: 720px; margin: 0 auto; text-align: center;
+    position: relative;
+  }
+  /* Particules décoratives derrière le hero */
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -60px; left: 50%; transform: translateX(-50%);
+    width: 600px; height: 600px;
+    background: radial-gradient(ellipse at center, rgba(29,158,117,0.08) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: floatY 6s ease-in-out infinite;
+    z-index: -1;
   }
   .badge-pill {
+    cursor: default;
     display: inline-flex; align-items: center; gap: 6px;
     background: var(--green-light); color: var(--green-dark);
     font-size: 12px; font-weight: 500;
@@ -134,7 +148,8 @@
     border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
     background: var(--gray-50);
   }
-  .stat { flex: 1; max-width: 220px; text-align: center; padding: 2rem 1.5rem; border-right: 1px solid var(--border); }
+  .stat { flex: 1; max-width: 220px; text-align: center; padding: 2rem 1.5rem; border-right: 1px solid var(--border); transition: background 0.2s; }
+  .stat:hover { background: var(--green-light); }
   .stat:last-child { border-right: none; }
   .stat-num { font-family: 'DM Serif Display', serif; font-size: 32px; color: var(--text); }
   .stat-label { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
@@ -584,6 +599,73 @@
     #page-contact > div { padding: 2rem 1rem; }
   }
   @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── Animations landing ── */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeInLeft {
+    from { opacity: 0; transform: translateX(-30px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes fadeInRight {
+    from { opacity: 0; transform: translateX(30px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.85); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+  @keyframes floatY {
+    0%, 100% { transform: translateY(0px); }
+    50%       { transform: translateY(-8px); }
+  }
+  @keyframes shimmer {
+    0%   { background-position: -200% center; }
+    100% { background-position:  200% center; }
+  }
+  @keyframes countUp {
+    from { opacity: 0; transform: scale(0.5); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+  @keyframes rotateBadge {
+    0%, 100% { transform: rotate(-2deg); }
+    50%       { transform: rotate(2deg); }
+  }
+  @keyframes gradientShift {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* Classes utilitaires d'animation */
+  .anim-fade-up   { opacity: 0; animation: fadeInUp   0.7s ease forwards; }
+  .anim-fade-down { opacity: 0; animation: fadeInDown 0.6s ease forwards; }
+  .anim-fade-left { opacity: 0; animation: fadeInLeft 0.7s ease forwards; }
+  .anim-scale-in  { opacity: 0; animation: scaleIn    0.5s ease forwards; }
+  .anim-float     { animation: floatY 3s ease-in-out infinite; }
+  .anim-rotate    { animation: rotateBadge 2s ease-in-out infinite; }
+  .delay-1 { animation-delay: 0.1s; }
+  .delay-2 { animation-delay: 0.2s; }
+  .delay-3 { animation-delay: 0.3s; }
+  .delay-4 { animation-delay: 0.4s; }
+  .delay-5 { animation-delay: 0.5s; }
+  .delay-6 { animation-delay: 0.6s; }
+  .delay-7 { animation-delay: 0.7s; }
+  .delay-8 { animation-delay: 0.8s; }
+
+  /* Intersection observer - elements hors ecran */
+  .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-left  { opacity: 0; transform: translateX(-24px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal-left.visible { opacity: 1; transform: translateX(0); }
+  .reveal-scale { opacity: 0; transform: scale(0.9); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .reveal-scale.visible { opacity: 1; transform: scale(1); }
   @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
   .fstep { animation: fadeInStep 0.28s ease; }
   @keyframes fadeInStep { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
@@ -639,14 +721,14 @@
 ============================= -->
 <div class="page active" id="page-landing">
   <section class="hero">
-    <div class="badge-pill"><span></span>Bouaké · Université Alassane Ouattara</div>
-    <h1>Le logement étudiant,<br/><em>partagé et solidaire</em></h1>
-    <p class="hero-sub">CohabiConnect met en relation des étudiants compatibles pour partager un logement, réduire les charges et mieux réussir leurs études à Bouaké.</p>
-    <div class="hero-actions">
+    <div class="badge-pill anim-fade-down anim-rotate"><span></span>Bouaké · Université Alassane Ouattara</div>
+    <h1 class="anim-fade-up delay-2">Le logement étudiant,<br/><em>partagé et solidaire</em></h1>
+    <p class="hero-sub anim-fade-up delay-3">CohabiConnect met en relation des étudiants compatibles pour partager un logement, réduire les charges et mieux réussir leurs études à Bouaké.</p>
+    <div class="hero-actions anim-fade-up delay-4">
       <button class="btn btn-primary btn-lg" onclick="goTo('inscription')">Trouver un colocataire →</button>
       <button class="btn btn-outline btn-lg" onclick="goTo('connexion')">Se connecter</button>
     </div>
-    <div class="hero-social">
+    <div class="hero-social anim-fade-up delay-5">
       <div class="avatars-row">
         <div class="mini-av" style="background:#E1F5EE;color:#0F6E56;">AK</div>
         <div class="mini-av" style="background:#E6F1FB;color:#185FA5;">KT</div>
@@ -657,7 +739,7 @@
     </div>
   </section>
 
-  <div class="stats-bar">
+  <div class="stats-bar" id="stats-bar">
     <div class="stat"><div class="stat-num">500+</div><div class="stat-label">Étudiants bénéficiaires</div></div>
     <div class="stat"><div class="stat-num">40%</div><div class="stat-label">Réduction des charges</div></div>
     <div class="stat"><div class="stat-num">125+</div><div class="stat-label">Logements partagés</div></div>
@@ -665,46 +747,46 @@
   </div>
 
   <section class="section" id="section-features">
-    <div class="section-tag">Fonctionnalités</div>
-    <h2 class="section-title">Tout pour bien cohabiter</h2>
-    <p class="section-sub">Des outils simples pour trouver un logement, organiser la vie commune et gérer les dépenses en toute transparence.</p>
+    <div class="section-tag reveal">Fonctionnalités</div>
+    <h2 class="section-title reveal delay-1">Tout pour bien cohabiter</h2>
+    <p class="section-sub reveal delay-2">Des outils simples pour trouver un logement, organiser la vie commune et gérer les dépenses en toute transparence.</p>
     <div class="features-grid">
-      <div class="feat-card">
+      <div class="feat-card reveal delay-1">
         <div class="feat-icon" style="background:#E1F5EE;">
           <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3.5" stroke="#1D9E75" stroke-width="1.5"/><path d="M3 17C3 13.7 6.1 11 10 11C13.9 11 17 13.7 17 17" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round"/></svg>
         </div>
         <h3>Profil étudiant</h3>
         <p>Créez votre profil avec photo, préférences de vie, budget et emploi du temps pour un matching optimal.</p>
       </div>
-      <div class="feat-card">
+      <div class="feat-card reveal delay-2">
         <div class="feat-icon" style="background:#E1F5EE;">
           <svg viewBox="0 0 20 20" fill="none"><path d="M4 10C4 10 5.8 5.5 10 5.5C14.2 5.5 16 10 16 10C16 10 14.2 14.5 10 14.5C5.8 14.5 4 10 4 10Z" stroke="#1D9E75" stroke-width="1.5"/><circle cx="10" cy="10" r="2.5" stroke="#1D9E75" stroke-width="1.5"/></svg>
         </div>
         <h3>Matching compatible</h3>
         <p>Notre algorithme analyse vos préférences pour vous proposer les colocataires les plus compatibles.</p>
       </div>
-      <div class="feat-card">
+      <div class="feat-card reveal delay-3">
         <div class="feat-icon" style="background:#E1F5EE;">
           <svg viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="12" rx="2" stroke="#1D9E75" stroke-width="1.5"/><path d="M7 9H13M7 12H11" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round"/></svg>
         </div>
         <h3>Gestion des charges</h3>
         <p>Tableau de bord partagé pour suivre le loyer, l'eau, l'électricité et Internet. Caisse commune transparente.</p>
       </div>
-      <div class="feat-card">
+      <div class="feat-card reveal delay-4">
         <div class="feat-icon" style="background:#E1F5EE;">
           <svg viewBox="0 0 20 20" fill="none"><path d="M10 2L12 7.5H18L13.2 11L15.2 16.5L10 13L4.8 16.5L6.8 11L2 7.5H8L10 2Z" stroke="#1D9E75" stroke-width="1.5" stroke-linejoin="round"/></svg>
         </div>
         <h3>Charte numérique</h3>
         <p>Signez une charte définissant les règles de vie commune. Téléchargeable en PDF par tous les colocataires.</p>
       </div>
-      <div class="feat-card">
+      <div class="feat-card reveal delay-5">
         <div class="feat-icon" style="background:#E1F5EE;">
           <svg viewBox="0 0 20 20" fill="none"><path d="M3 15L7 11L11 13L16 7" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
         <h3>Suivi & médiation</h3>
         <p>Un espace de signalement et de médiation pour résoudre les conflits et assurer une cohabitation sereine.</p>
       </div>
-      <div class="feat-card">
+      <div class="feat-card reveal delay-6">
         <div class="feat-icon" style="background:#E1F5EE;">
           <svg viewBox="0 0 20 20" fill="none"><path d="M10 3V10L13.5 12.5" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round"/><circle cx="10" cy="10" r="7" stroke="#1D9E75" stroke-width="1.5"/></svg>
         </div>
@@ -715,31 +797,31 @@
   </section>
 
   <section class="section" style="border-top:1px solid var(--border);padding-top:5rem;">
-    <div class="section-tag">Processus</div>
-    <h2 class="section-title">Comment ça marche</h2>
-    <p class="section-sub">En quatre étapes simples, trouvez votre colocation idéale et commencez à économiser.</p>
+    <div class="section-tag reveal">Processus</div>
+    <h2 class="section-title reveal delay-1">Comment ça marche</h2>
+    <p class="section-sub reveal delay-2">En quatre étapes simples, trouvez votre colocation idéale et commencez à économiser.</p>
     <div class="steps-list">
-      <div class="step"><div class="step-num">1</div><div><h4>Créez votre profil</h4><p>Inscrivez-vous avec votre carte étudiante, ajoutez une photo, renseignez votre budget et vos habitudes de vie.</p></div></div>
-      <div class="step"><div class="step-num">2</div><div><h4>Trouvez vos colocataires</h4><p>Notre algorithme vous propose des groupes de 2 à 4 étudiants compatibles. Échangez avant de valider.</p></div></div>
-      <div class="step"><div class="step-num">3</div><div><h4>Signez la charte</h4><p>Chaque colocataire signe la charte numérique définissant les règles de vie et la répartition des charges.</p></div></div>
-      <div class="step"><div class="step-num">4</div><div><h4>Gérez ensemble</h4><p>Accédez à votre tableau de bord partagé pour les dépenses, signalements et communication entre colocataires.</p></div></div>
+      <div class="step reveal delay-1"><div class="step-num">1</div><div><h4>Créez votre profil</h4><p>Inscrivez-vous avec votre carte étudiante, ajoutez une photo, renseignez votre budget et vos habitudes de vie.</p></div></div>
+      <div class="step reveal delay-2"><div class="step-num">2</div><div><h4>Trouvez vos colocataires</h4><p>Notre algorithme vous propose des groupes de 2 à 4 étudiants compatibles. Échangez avant de valider.</p></div></div>
+      <div class="step reveal delay-3"><div class="step-num">3</div><div><h4>Signez la charte</h4><p>Chaque colocataire signe la charte numérique définissant les règles de vie et la répartition des charges.</p></div></div>
+      <div class="step reveal delay-4"><div class="step-num">4</div><div><h4>Gérez ensemble</h4><p>Accédez à votre tableau de bord partagé pour les dépenses, signalements et communication entre colocataires.</p></div></div>
     </div>
   </section>
 
-  <section class="section" style="border-top:1px solid var(--border);padding-top:5rem;">
-    <div class="section-tag">Témoignages</div>
-    <h2 class="section-title">Ce que disent les étudiants</h2>
-    <p class="section-sub">Des centaines d'étudiants ont déjà amélioré leurs conditions de vie grâce à CohabiConnect.</p>
+  <section class="section" id="section-temoignages" style="border-top:1px solid var(--border);padding-top:5rem;">
+    <div class="section-tag reveal">Témoignages</div>
+    <h2 class="section-title reveal delay-1">Ce que disent les étudiants</h2>
+    <p class="section-sub reveal delay-2">Des centaines d'étudiants ont déjà amélioré leurs conditions de vie grâce à CohabiConnect.</p>
     <div class="testimonials">
-      <div class="testi">
+      <div class="testi reveal-scale delay-2">
         <p class="testi-quote">"Grâce à CohabiConnect, je paie moitié moins de loyer. Je peux enfin me concentrer sur mes études sans stresser chaque mois."</p>
         <div class="testi-author"><div class="testi-avatar" style="background:#E1F5EE;color:#0F6E56;">AK</div><div><div class="testi-name">Aminata Koné</div><div class="testi-meta">L2 Droit · UAO</div></div></div>
       </div>
-      <div class="testi">
+      <div class="testi reveal-scale delay-3">
         <p class="testi-quote">"Le système de gestion des charges est très pratique. Plus de conflits sur qui paie quoi, tout est transparent."</p>
         <div class="testi-author"><div class="testi-avatar" style="background:#E6F1FB;color:#185FA5;">KT</div><div><div class="testi-name">Kofi Traoré</div><div class="testi-meta">L3 Informatique · UAO</div></div></div>
       </div>
-      <div class="testi">
+      <div class="testi reveal-scale delay-4">
         <p class="testi-quote">"J'ai trouvé mes colocataires en 3 jours. Le matching est bien fait, on s'entend super bien et l'ambiance est studieuse."</p>
         <div class="testi-author"><div class="testi-avatar" style="background:#FBEAF0;color:#993556;">FB</div><div><div class="testi-name">Fatou Bamba</div><div class="testi-meta">M1 Économie · UAO</div></div></div>
       </div>
@@ -750,8 +832,8 @@
   <!-- SECTION PARTENAIRES -->
   <section style="padding:4rem 2.5rem;border-top:1px solid var(--border);background:#fff;">
     <div style="max-width:960px;margin:0 auto;text-align:center;">
-      <div class="section-tag" style="text-align:center;">Partenaires</div>
-      <h2 class="section-title" style="margin-bottom:0.75rem;">Nos partenaires</h2>
+      <div class="section-tag reveal" style="text-align:center;">Partenaires</div>
+      <h2 class="section-title reveal delay-1" style="margin-bottom:0.75rem;">Nos partenaires</h2>
       <p style="font-size:15px;color:var(--text-muted);margin-bottom:3rem;max-width:520px;margin-left:auto;margin-right:auto;line-height:1.75;">Ils nous font confiance et soutiennent le projet de cohabitation solidaire à Bouaké.</p>
       <div style="display:flex;align-items:center;justify-content:center;gap:4rem;flex-wrap:wrap;">
         <div style="display:flex;flex-direction:column;align-items:center;gap:14px;">
@@ -1573,7 +1655,7 @@
   </div>
   <div class="match-wrap">
     <div style="margin-bottom:2rem;">
-      <div class="section-tag">Compatibilité</div>
+      <div class="section-tag reveal">Compatibilité</div>
       <h2 style="font-family:'DM Serif Display',serif;font-size:28px;font-weight:400;color:var(--text);margin-bottom:6px;">Colocataires suggérés</h2>
       <p style="font-size:14px;color:var(--text-muted);">Basé sur votre profil, voici les étudiants les plus compatibles avec vous à Bouaké.</p>
     </div>
@@ -1664,7 +1746,7 @@
     <button class="itab active" onclick="goTo('mediation')">Médiation</button>
   </div>
   <div class="med-wrap">
-    <div><div class="section-tag">Espace sécurisé</div><h2 style="font-family:'DM Serif Display',serif;font-size:28px;font-weight:400;color:var(--text);margin-bottom:6px;">Médiation & signalement</h2><p style="font-size:14px;color:var(--text-muted);">Signalez un problème ou un conflit avec un colocataire. Notre équipe vous accompagne.</p></div>
+    <div><div class="section-tag reveal">Espace sécurisé</div><h2 style="font-family:'DM Serif Display',serif;font-size:28px;font-weight:400;color:var(--text);margin-bottom:6px;">Médiation & signalement</h2><p style="font-size:14px;color:var(--text-muted);">Signalez un problème ou un conflit avec un colocataire. Notre équipe vous accompagne.</p></div>
     <div class="toast-success" id="med-toast"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7L5.5 10.5L12 4" stroke="#1D9E75" stroke-width="1.8" stroke-linecap="round"/></svg>Signalement envoyé avec succès. Notre équipe vous contactera sous 24h.</div>
     <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;margin:1.5rem 0;">
       <h3 style="font-size:15px;font-weight:500;color:var(--text);margin-bottom:1.25rem;">Nouveau signalement</h3>
@@ -1932,6 +2014,7 @@ Aminata</textarea>
     document.getElementById('page-' + page).classList.add('active');
     window.scrollTo(0, 0);
     if (page === 'landing' || page === 'connexion' || page === 'contact') {
+      if (page === 'landing') setTimeout(initAnimations, 150);
       document.getElementById('nav-links-public').style.display = '';
       document.getElementById('nav-links-app').style.display = 'none';
       document.getElementById('nav-right-public').style.display = '';
@@ -3118,8 +3201,68 @@ Aminata</textarea>
     }, 150);
   }
 
+
+  // ===== ANIMATIONS LANDING =====
+  function initAnimations() {
+    // Intersection Observer pour les éléments .reveal
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('.reveal, .reveal-left, .reveal-scale').forEach(function(el) {
+      observer.observe(el);
+    });
+
+    // Compteur animé des stats
+    var statsObserver = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          animerStats();
+          statsObserver.disconnect();
+        }
+      });
+    }, { threshold: 0.3 });
+
+    var statsBar = document.getElementById('stats-bar');
+    if (statsBar) statsObserver.observe(statsBar);
+  }
+
+  function animerStats() {
+    var stats = [
+      { el: document.querySelector('.stat:nth-child(1) .stat-num'), target: 500, suffix: '+' },
+      { el: document.querySelector('.stat:nth-child(2) .stat-num'), target: 40,  suffix: '%' },
+      { el: document.querySelector('.stat:nth-child(3) .stat-num'), target: 125, suffix: '+' },
+      { el: document.querySelector('.stat:nth-child(4) .stat-num'), target: 3,   suffix: '' },
+    ];
+    stats.forEach(function(s) {
+      if (!s.el) return;
+      var start = 0;
+      var duration = 1500;
+      var step = duration / s.target;
+      var timer = setInterval(function() {
+        start += Math.ceil(s.target / 60);
+        if (start >= s.target) {
+          start = s.target;
+          clearInterval(timer);
+        }
+        s.el.textContent = start + s.suffix;
+      }, step);
+    });
+  }
+
+  // Lancer les animations quand la page landing est visible
+  function initLandingAnimations() {
+    setTimeout(initAnimations, 100);
+  }
+
   // Init
   updateCharCount();
+  initLandingAnimations();
 </script>
 
   <!-- ============================================================
