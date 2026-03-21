@@ -1328,6 +1328,77 @@
   @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
   .fstep { animation: fadeInStep 0.28s ease; }
   @keyframes fadeInStep { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+  /* ══════════════════════════════════════════════
+     RESPONSIVE COMPLET FINAL — Tous appareils
+  ══════════════════════════════════════════════ */
+
+  @media (max-width: 768px) {
+
+    /* Sidebar → bottom bar */
+    #app-sidebar { top:auto !important;bottom:0 !important;left:0 !important;right:0 !important;width:100% !important;height:64px !important; }
+    .sidebar-nav { flex-direction:row !important;width:100% !important;height:64px !important;padding:0 8px !important;border-right:none !important;border-top:1px solid var(--border) !important;box-shadow:0 -2px 16px rgba(0,0,0,.08) !important;justify-content:space-around !important;overflow:visible !important; }
+    .sidebar-nav:hover { width:100% !important; }
+    .sb-logo,.sb-sep { display:none !important; }
+    .sb-links { flex-direction:row !important;gap:0 !important;padding:0 !important;flex:1 !important;justify-content:space-around !important; }
+    .sb-label { display:none !important; }
+    .sb-item { padding:6px 10px !important;flex-direction:column !important;gap:2px !important;min-height:unset !important; }
+    .sb-item:hover { transform:none !important; }
+    .sb-icon { width:36px !important;height:36px !important; }
+    .page-with-sidebar { margin-left:0 !important;margin-bottom:68px !important; }
+
+    /* Admin grilles */
+    [style*="grid-template-columns:repeat(4,1fr)"] { grid-template-columns:repeat(2,1fr) !important; }
+    [style*="grid-template-columns:2fr 1fr"] { grid-template-columns:1fr !important; }
+    [style*="grid-template-columns:1fr 1fr"] { grid-template-columns:1fr !important; }
+    [style*="grid-template-columns:2fr 2fr 1fr 1fr 1fr 120px"] { display:none !important; }
+    #admin-user-list > div { display:flex !important;flex-wrap:wrap !important;padding:12px !important;align-items:center !important;gap:6px !important; }
+    .admin-tab { padding:7px 10px !important;font-size:12px !important; }
+
+    /* Contact */
+    #page-contact > div { padding:2rem 1rem !important; }
+    #page-contact [style*="grid-template-columns:repeat(3,1fr)"] { grid-template-columns:1fr !important; }
+    #page-contact [style*="grid-template-columns:1fr 1fr"] { grid-template-columns:1fr !important; }
+    #newsletter-email { min-width:unset !important;width:100% !important; }
+
+    /* Connexion */
+    #page-connexion [style*="max-width:480px"] { padding:2rem 1rem !important; }
+
+    /* Verify code */
+    .verify-digit { width:40px !important;height:48px !important;font-size:18px !important; }
+    #verify-code-inputs { gap:6px !important;justify-content:center !important; }
+
+    /* Genre boutons */
+    #rg-genre,#rg-genre-prop { flex-direction:column !important;gap:8px !important; }
+
+    /* Paiement */
+    #payment-methods { grid-template-columns:1fr 1fr !important;gap:8px !important; }
+
+    /* Modale verrou */
+    #lock-modal-box { padding:2rem 1.25rem !important;margin:1rem !important;max-width:calc(100% - 2rem) !important; }
+
+    /* Footer */
+    .footer { flex-direction:column !important;gap:1rem !important;text-align:center !important;padding:1.5rem 1rem !important; }
+    .footer-links { flex-wrap:wrap !important;justify-content:center !important; }
+  }
+
+  @media (max-width: 480px) {
+    /* Sidebar icons plus petits */
+    .sb-item { padding:4px 8px !important; }
+    .sb-icon { width:30px !important;height:30px !important; }
+    /* Paiement 1 colonne */
+    #payment-methods { grid-template-columns:1fr !important; }
+    /* Code vérif plus petit */
+    .verify-digit { width:36px !important;height:44px !important;font-size:16px !important; }
+    /* Admin onglets */
+    .admin-tab { font-size:10px !important;padding:6px 8px !important; }
+    /* Stats */
+    .stat-card { min-width:100% !important;border-right:none !important; }
+    /* Cacher bouton Se connecter dans nav pour gagner de la place */
+    .nav-right .btn-outline:not(.btn-primary) { display:none !important; }
+    /* Section titre */
+    .section-title { font-size:19px !important; }
+  }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 </head>
