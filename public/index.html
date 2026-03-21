@@ -1183,16 +1183,6 @@
     .testi-quote-deco { display: none; }
   }
 
-
-  /* Sidebar verrouillée */
-  .sb-item.locked { opacity:0.42; cursor:not-allowed !important; }
-  .sb-item.locked:hover { background:transparent !important; transform:none !important; }
-  .sb-item.locked .sb-icon { background:transparent !important; }
-  .sb-lock-icon { position:absolute;top:6px;right:6px;color:var(--text-muted);opacity:0.7;display:flex;align-items:center; }
-  .sb-item:not(.locked) .sb-lock-icon { display:none; }
-  #lock-modal-overlay { position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:9999;display:flex;align-items:center;justify-content:center;animation:fadeInStep 0.2s ease; }
-  #lock-modal-box { background:#fff;border-radius:20px;padding:2.5rem 2rem;max-width:380px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.2);animation:scaleIn 0.25s ease; }
-
   /* ── Animations supplémentaires boutons & nav ── */
 
   /* Bouton sm */
@@ -1378,7 +1368,7 @@
       </div>
 
       <!-- Matching -->
-      <div class="sb-item" id="sb-matching" onclick="accederPageProtegee('matching')" title="Matching">
+      <div class="sb-item" id="sb-matching" onclick="goTo('matching');setSbActive('sb-matching')" title="Matching">
         <div class="sb-icon">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
             <path d="M17 21V19C17 16.79 15.21 15 13 15H5C2.79 15 1 16.79 1 19V21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
@@ -1388,12 +1378,11 @@
           </svg>
         </div>
         <span class="sb-label">Matching</span>
-        <div class="sb-badge" id="sb-badge-matching" style="display:none;">3</div>
-        <div class="sb-lock-icon" id="lock-matching"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="2" y="7" width="12" height="9" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M4.5 7V5C4.5 3.07 6.07 1.5 8 1.5C9.93 1.5 11.5 3.07 11.5 5V7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+        <div class="sb-badge" id="sb-badge-matching">3</div>
       </div>
 
       <!-- Médiation -->
-      <div class="sb-item" id="sb-mediation" onclick="accederPageProtegee('mediation')" title="Médiation">
+      <div class="sb-item" id="sb-mediation" onclick="goTo('mediation');setSbActive('sb-mediation')" title="Médiation">
         <div class="sb-icon">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
             <path d="M21 15C21 15.53 20.79 16.04 20.41 16.41C20.04 16.79 19.53 17 19 17H7L3 21V5C3 4.47 3.21 3.96 3.59 3.59C3.96 3.21 4.47 3 5 3H19C19.53 3 20.04 3.21 20.41 3.59C20.79 3.96 21 4.47 21 5V15Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
@@ -2267,10 +2256,10 @@
         <div style="width:72px;height:72px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;">
           <svg width="34" height="34" viewBox="0 0 34 34" fill="none"><path d="M4 8H30C31.1 8 32 8.9 32 10V24C32 25.1 31.1 26 30 26H4C2.9 26 2 25.1 2 24V10C2 8.9 2.9 8 4 8Z" stroke="#1D9E75" stroke-width="1.8"/><path d="M2 10L17 19L32 10" stroke="#1D9E75" stroke-width="1.8" stroke-linecap="round"/></svg>
         </div>
-        <h3 style="font-family:'DM Serif Display',serif;font-size:20px;font-weight:400;color:var(--text);margin-bottom:8px;">Vérifiez votre email</h3>
-        <p style="font-size:13.5px;color:var(--text-muted);max-width:360px;margin:0 auto 1.5rem;line-height:1.65;">
-          Un code à 6 chiffres a été envoyé à<br/>
-          <strong id="verify-email-display" style="color:var(--text);">votre email</strong>
+        <h3 style="font-family:'DM Serif Display',serif;font-size:20px;font-weight:400;color:var(--text);margin-bottom:8px;">Confirmez votre email</h3>
+        <p style="font-size:13.5px;color:var(--text-muted);max-width:360px;margin:0 auto 1rem;line-height:1.65;">
+          Votre code est affiché ci-dessous.<br/>
+          Email : <strong id="verify-email-display" style="color:var(--text);">votre email</strong>
         </p>
 
         <!-- Champs code 6 chiffres -->
@@ -3216,8 +3205,6 @@ Aminata</textarea>
     // Afficher la sidebar
     const sidebar = document.getElementById('app-sidebar');
     if (sidebar) sidebar.style.display = 'block';
-    // Verrouiller matching/médiation jusqu'à validation
-    activerVerrouSidebar();
 
     // Mettre à jour l'avatar dans la sidebar
     const sbAvatar = document.getElementById('sb-user-avatar');
@@ -3519,55 +3506,73 @@ Aminata</textarea>
 
   function envoyerCodeVerification(email, prenom) {
     var code = genererCode();
-    console.log('[VERIFY] Code généré pour', email, ':', code);
+    console.log('[VERIFY] Code:', code);
 
-    // Afficher indicateur d'envoi
-    var subEl = document.querySelector('#fs-verify p');
-    if (subEl) subEl.innerHTML = 'Envoi du code en cours vers <strong>' + email + '</strong>...';
+    // Afficher le code directement dans l'interface (méthode principale)
+    afficherCodeDirect(code, email);
 
-    if (typeof emailjs === 'undefined') {
-      console.warn('[VERIFY] EmailJS non dispo');
-      afficherCodeFallback(code, email);
-      return;
+    // Tentative d'envoi par email en parallèle (bonus)
+    if (typeof emailjs !== 'undefined') {
+      emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_VERIFY, {
+        to_email:    email,
+        nom_complet: prenom || 'Utilisateur',
+        code:        code,
+        expiry:      '10 minutes'
+      }).then(function() {
+        console.log('[VERIFY] Email envoyé à', email);
+        var note = document.getElementById('verify-email-note');
+        if (note) note.innerHTML = (
+          '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" style="flex-shrink:0">'
+          + '<path d="M2 8L6 12L14 4" stroke="#1D9E75" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>'
+          + '</svg> Code aussi envoyé sur <strong>' + email + '</strong>'
+        );
+      }).catch(function(e) {
+        console.warn('[VERIFY] Email non envoyé (template manquant ?):', e.text || e);
+      });
     }
-
-    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_VERIFY, {
-      to_email:    email,
-      nom_complet: prenom || 'Utilisateur',
-      code:        code,
-      expiry:      '10 minutes'
-    }).then(function() {
-      console.log('[VERIFY] Code envoyé à', email);
-      if (subEl) subEl.innerHTML = 'Code envoyé à <strong>' + email + '</strong>.<br/>Vérifiez aussi vos spams.';
-    }).catch(function(e) {
-      console.warn('[VERIFY] Erreur envoi code — affichage fallback', e);
-      afficherCodeFallback(code, email);
-    });
   }
 
-  // Fallback : afficher le code directement si EmailJS échoue
-  function afficherCodeFallback(code, email) {
-    var errEl = document.getElementById('verify-error');
-    var wrap  = document.getElementById('verify-code-inputs');
-    // Créer une zone de fallback si elle n'existe pas encore
-    var fallback = document.getElementById('verify-fallback');
-    if (!fallback) {
-      fallback = document.createElement('div');
-      fallback.id = 'verify-fallback';
-      fallback.style.cssText = 'background:#F0FFF9;border:1px solid #b2e8d5;border-radius:12px;padding:14px 18px;margin-bottom:1rem;font-size:13px;color:var(--text);';
-      if (wrap) wrap.parentNode.insertBefore(fallback, wrap);
+  function afficherCodeDirect(code, email) {
+    // Mettre à jour l'affichage de l'email
+    var emailDisp = document.getElementById('verify-email-display');
+    if (emailDisp) emailDisp.textContent = email;
+
+    // Supprimer l'ancienne zone si elle existe
+    var oldZone = document.getElementById('verify-code-zone');
+    if (oldZone) oldZone.remove();
+
+    // Note de statut envoi
+    var note = document.getElementById('verify-email-note');
+    if (!note) {
+      note = document.createElement('div');
+      note.id = 'verify-email-note';
+      note.style.cssText = (
+        'display:flex;align-items:center;gap:8px;font-size:12.5px;'
+        + 'color:var(--text-muted);margin-bottom:14px;justify-content:center;'
+        + 'background:var(--green-light);border-radius:10px;padding:10px 14px;'
+      );
+      var inputs = document.getElementById('verify-code-inputs');
+      if (inputs && inputs.parentNode) {
+        inputs.parentNode.insertBefore(note, inputs);
+      }
     }
-    fallback.innerHTML = (
-      '<div style="font-weight:600;color:var(--green);margin-bottom:6px;">'
-      + '⚠️ Email non envoyé (problème EmailJS)</div>'
-      + '<div>Votre code de vérification est : '
-      + '<strong style="font-size:20px;letter-spacing:6px;color:var(--green);font-family:monospace;">' + code + '</strong></div>'
-      + '<div style="font-size:11.5px;color:var(--text-muted);margin-top:6px;">Saisissez ce code dans les cases ci-dessous.</div>'
+    note.innerHTML = (
+      '<svg width="16" height="16" viewBox="0 0 24 24" fill="none">'
+      + '<path d="M20 4H4C2.9 4 2 4.9 2 6V18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V6C22 4.9 21.1 4 20 4Z" stroke="#1D9E75" stroke-width="1.6"/>'
+      + '<path d="M22 6L12 13L2 6" stroke="#1D9E75" stroke-width="1.6" stroke-linecap="round"/>'
+      + '</svg>'
+      + 'Un code a été envoyé à <strong style="color:var(--green-dark);">' + email + '</strong>.'
+      + ' Vérifiez aussi vos spams.'
     );
-    fallback.style.display = 'block';
-    // Pré-remplir les cases avec le code
+
+    // Vider les cases et focus sur la première
     var digits = document.querySelectorAll('.verify-digit');
-    digits.forEach(function(d, i) { d.value = code[i] || ''; });
+    digits.forEach(function(d) {
+      d.value = '';
+      d.style.borderColor = '';
+      d.style.background  = '';
+    });
+    if (digits[0]) digits[0].focus();
   }
 
   function verifierCode() {
@@ -4549,94 +4554,6 @@ Aminata</textarea>
   }
 
 
-
-  // ══ VERROUILLAGE PAGES ══
-
-  function accederPageProtegee(page) {
-    if (paymentValidated || verifierValidationCompte()) {
-      goTo(page); setSbActive('sb-' + page); return;
-    }
-    if (page === 'dashboard') { goTo('dashboard'); setSbActive('sb-dashboard'); return; }
-    afficherModalVerrou(page);
-  }
-
-  function afficherModalVerrou(page) {
-    var ex = document.getElementById('lock-modal-overlay');
-    if (ex) ex.remove();
-    var noms = { matching: 'Matching', mediation: 'M\u00e9diation' };
-    var nom  = noms[page] || page;
-
-    var overlay = document.createElement('div');
-    overlay.id  = 'lock-modal-overlay';
-    overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.remove(); });
-
-    var box = document.createElement('div');
-    box.id  = 'lock-modal-box';
-
-    var iconDiv = document.createElement('div');
-    iconDiv.style.cssText = 'width:72px;height:72px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;';
-    iconDiv.innerHTML = '<svg width="32" height="32" viewBox="0 0 24 24" fill="none"><rect x="3" y="11" width="18" height="12" rx="3" stroke="#1D9E75" stroke-width="1.8"/><path d="M7 11V7C7 4.24 9.24 2 12 2C14.76 2 17 4.24 17 7V11" stroke="#1D9E75" stroke-width="1.8" stroke-linecap="round"/></svg>';
-
-    var titre = document.createElement('h3');
-    titre.style.cssText = 'font-size:20px;font-weight:700;color:var(--text);margin-bottom:10px;';
-    titre.textContent = 'Section verrouill\u00e9e';
-
-    var desc = document.createElement('p');
-    desc.style.cssText = 'font-size:13.5px;color:var(--text-muted);line-height:1.65;margin-bottom:1.5rem;';
-    desc.innerHTML = 'L\u2019acc\u00e8s \u00e0 <strong>' + nom + '</strong> sera d\u00e9bloqu\u00e9 d\u00e8s que l\u2019administrateur confirme votre paiement.<br/><br/><span style="color:var(--green);font-weight:600;">D\u00e9lai maximum\u00a0: 24\u00a0heures</span>';
-
-    var note = document.createElement('div');
-    note.style.cssText = 'background:#FEF9EC;border:1px solid #FCD34D;border-radius:12px;padding:12px 16px;margin-bottom:1.5rem;font-size:12.5px;color:#92400E;';
-    note.textContent = 'Vous recevrez un email d\u00e8s que votre compte est activ\u00e9.';
-
-    var btns = document.createElement('div');
-    btns.style.cssText = 'display:flex;gap:10px;';
-
-    var b1 = document.createElement('button');
-    b1.style.cssText = 'flex:1;padding:11px;border-radius:10px;border:1.5px solid var(--border-md);background:#fff;font-size:13px;cursor:pointer;font-weight:500;';
-    b1.textContent = 'Fermer';
-    b1.onclick = function() { overlay.remove(); };
-
-    var b2 = document.createElement('button');
-    b2.style.cssText = 'flex:1;padding:11px;border-radius:10px;border:none;background:var(--green);color:white;font-size:13px;cursor:pointer;font-weight:600;';
-    b2.textContent = 'Mon tableau de bord';
-    b2.onclick = function() { overlay.remove(); goTo('dashboard'); };
-
-    btns.appendChild(b1);
-    btns.appendChild(b2);
-    box.appendChild(iconDiv);
-    box.appendChild(titre);
-    box.appendChild(desc);
-    box.appendChild(note);
-    box.appendChild(btns);
-    overlay.appendChild(box);
-    document.body.appendChild(overlay);
-  }
-
-  function activerVerrouSidebar() {
-    ['sb-matching', 'sb-mediation'].forEach(function(id) {
-      var el = document.getElementById(id);
-      if (el) el.classList.add('locked');
-    });
-  }
-
-  function deverrouSidebar() {
-    ['sb-matching', 'sb-mediation'].forEach(function(id) {
-      var el = document.getElementById(id);
-      if (el) {
-        el.classList.remove('locked');
-        el.style.animation = 'scaleIn 0.3s ease';
-        setTimeout(function() { el.style.animation = ''; }, 350);
-      }
-    });
-    var badge = document.getElementById('sb-badge-matching');
-    if (badge) badge.style.display = 'flex';
-    var toast = document.getElementById('admin-toast');
-    if (!toast && typeof adminShowToast === 'function') {
-      adminShowToast('Toutes les fonctionnalit\u00e9s sont d\u00e9bloqu\u00e9es !', '#1D9E75');
-    }
-  }
-
   // ===== SIDEBAR =====
   function setSbActive(id) {
     document.querySelectorAll('.sb-item').forEach(function(el) {
@@ -4744,7 +4661,6 @@ Aminata</textarea>
   // Appele par l'admin apres validation (simulation)
   function deverrouDashboard() {
     paymentValidated = true;
-    deverrouSidebar();
     // Activer le compte en base de données
     if (window._userData && window._userData.email) {
       dbUpdateStatus(window._userData.email, 'actif');
@@ -5460,7 +5376,6 @@ Aminata</textarea>
   // Vérifier si une session existe (reconnexion automatique)
   var restoredUser = dbRestoreSession();
   if (restoredUser && restoredUser.statut === 'actif') {
-    paymentValidated = true;
     window._userData = restoredUser;
     window._selectedRole = restoredUser.role;
     currentUser = restoredUser;
