@@ -3521,21 +3521,53 @@ Aminata</textarea>
     var code = genererCode();
     console.log('[VERIFY] Code généré pour', email, ':', code);
 
+    // Afficher indicateur d'envoi
+    var subEl = document.querySelector('#fs-verify p');
+    if (subEl) subEl.innerHTML = 'Envoi du code en cours vers <strong>' + email + '</strong>...';
+
     if (typeof emailjs === 'undefined') {
-      console.warn('[VERIFY] EmailJS non dispo — code simulé:', code);
+      console.warn('[VERIFY] EmailJS non dispo');
+      afficherCodeFallback(code, email);
       return;
     }
 
     emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_VERIFY, {
-      to_email:   email,
-      nom_complet: prenom,
-      code:       code,
-      expiry:     '10 minutes'
+      to_email:    email,
+      nom_complet: prenom || 'Utilisateur',
+      code:        code,
+      expiry:      '10 minutes'
     }).then(function() {
       console.log('[VERIFY] Code envoyé à', email);
+      if (subEl) subEl.innerHTML = 'Code envoyé à <strong>' + email + '</strong>.<br/>Vérifiez aussi vos spams.';
     }).catch(function(e) {
-      console.warn('[VERIFY] Erreur envoi code:', e);
+      console.warn('[VERIFY] Erreur envoi code — affichage fallback', e);
+      afficherCodeFallback(code, email);
     });
+  }
+
+  // Fallback : afficher le code directement si EmailJS échoue
+  function afficherCodeFallback(code, email) {
+    var errEl = document.getElementById('verify-error');
+    var wrap  = document.getElementById('verify-code-inputs');
+    // Créer une zone de fallback si elle n'existe pas encore
+    var fallback = document.getElementById('verify-fallback');
+    if (!fallback) {
+      fallback = document.createElement('div');
+      fallback.id = 'verify-fallback';
+      fallback.style.cssText = 'background:#F0FFF9;border:1px solid #b2e8d5;border-radius:12px;padding:14px 18px;margin-bottom:1rem;font-size:13px;color:var(--text);';
+      if (wrap) wrap.parentNode.insertBefore(fallback, wrap);
+    }
+    fallback.innerHTML = (
+      '<div style="font-weight:600;color:var(--green);margin-bottom:6px;">'
+      + '⚠️ Email non envoyé (problème EmailJS)</div>'
+      + '<div>Votre code de vérification est : '
+      + '<strong style="font-size:20px;letter-spacing:6px;color:var(--green);font-family:monospace;">' + code + '</strong></div>'
+      + '<div style="font-size:11.5px;color:var(--text-muted);margin-top:6px;">Saisissez ce code dans les cases ci-dessous.</div>'
+    );
+    fallback.style.display = 'block';
+    // Pré-remplir les cases avec le code
+    var digits = document.querySelectorAll('.verify-digit');
+    digits.forEach(function(d, i) { d.value = code[i] || ''; });
   }
 
   function verifierCode() {
