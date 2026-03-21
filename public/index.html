@@ -2296,7 +2296,24 @@
         <div class="fgrid">
           <div class="fgroup"><label class="flabel">Budget max mensuel (FCFA)</label><input class="finput" type="text" value="30 000" /></div>
           <div class="fgroup"><label class="flabel">Nombre de colocataires</label><select class="fselect"><option>2 personnes</option><option selected>3 personnes</option><option>4 personnes</option></select></div>
-          <div class="fgroup full"><label class="flabel">Zone de préférence à Bouaké</label><select class="fselect"><option>À proximité de l'UAO</option><option>Centre-ville</option><option>Quartier Commerce</option><option>Air France</option><option>Pas de préférence</option></select></div>
+          <div class="fgroup full"><label class="flabel">Zone de préférence à Bouaké</label><input class="finput" type="text" id="zone-chercher" placeholder="Ex : Quartier Air France, proximité UAO, Centre-ville…" /><span style="font-size:11px;color:var(--text-hint);margin-top:3px;display:block;">Indiquez librement votre zone ou quartier préféré</span></div>
+          <div class="fgroup full">
+            <label class="flabel">Genre <span style="color:var(--coral);">*</span></label>
+            <div class="radio-group" id="rg-genre" style="gap:12px;">
+              <div class="radio-opt" id="genre-homme" onclick="selGenre('Homme')" style="flex:1;justify-content:center;padding:12px 20px;">
+                <div class="rdot"></div>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.6"/><path d="M6 20C6 16.69 8.69 14 12 14C15.31 14 18 16.69 18 20" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+                Homme
+              </div>
+              <div class="radio-opt" id="genre-femme" onclick="selGenre('Femme')" style="flex:1;justify-content:center;padding:12px 20px;">
+                <div class="rdot"></div>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="1.6"/><path d="M5 21C5 17.13 8.13 14 12 14C15.87 14 19 17.13 19 21" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M12 17V21M10 19H14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+                Femme
+              </div>
+            </div>
+            <div id="genre-error" style="display:none;font-size:11.5px;color:var(--coral);margin-top:4px;">Veuillez sélectionner votre genre.</div>
+          </div>
+
           <div class="fgroup full"><label class="flabel">Disponibilité</label>
             <div class="radio-group" id="rg-dispo">
               <div class="radio-opt sel" onclick="selRadio('rg-dispo',this)"><div class="rdot"></div>Immédiatement</div>
@@ -2377,6 +2394,24 @@
             <div id="logement-photos-preview" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;"></div>
           </div>
         </div>
+      </div>
+
+      <!-- Genre commun aux deux modes -->
+      <div class="fgroup full" style="margin-top:1rem;">
+        <label class="flabel">Genre <span style="color:var(--coral);">*</span></label>
+        <div class="radio-group" id="rg-genre-prop" style="gap:12px;">
+          <div class="radio-opt" id="genre-homme-prop" onclick="selGenre('Homme')" style="flex:1;justify-content:center;padding:12px 20px;">
+            <div class="rdot"></div>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.6"/><path d="M6 20C6 16.69 8.69 14 12 14C15.31 14 18 16.69 18 20" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+            Homme
+          </div>
+          <div class="radio-opt" id="genre-femme-prop" onclick="selGenre('Femme')" style="flex:1;justify-content:center;padding:12px 20px;">
+            <div class="rdot"></div>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="1.6"/><path d="M5 21C5 17.13 8.13 14 12 14C15.87 14 19 17.13 19 21" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M12 17V21M10 19H14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+            Femme
+          </div>
+        </div>
+        <div id="genre-error-prop" style="display:none;font-size:11.5px;color:var(--coral);margin-top:4px;">Veuillez sélectionner votre genre.</div>
       </div>
 
       <div class="factions"><button class="btn btn-outline" onclick="prevFStep(3)">← Retour</button><button class="btn btn-primary" onclick="nextFStep(3)">Continuer →</button></div>
@@ -3221,6 +3256,13 @@ Aminata</textarea>
   // ===== INSCRIPTION =====
   function nextFStep(n) {
     if (n === 1 && !guardedFirstStep()) return;
+    // Valider genre obligatoire à l'étape 3
+    if (n === 3 && !selectedGenre) {
+      var errId = (selectedRole === 'chercher') ? 'genre-error' : 'genre-error-prop';
+      var errEl = document.getElementById(errId);
+      if (errEl) { errEl.style.display = 'block'; errEl.scrollIntoView({behavior:'smooth',block:'center'}); }
+      return;
+    }
     // Photo obligatoire à l'étape 1
     if (n === 1) {
       if (!photoData) {
@@ -3251,6 +3293,8 @@ Aminata</textarea>
       currentFStep = 'verify';
       return; // Ne pas continuer le flux normal
     }
+    // Sauvegarder genre dans userData
+    if (n === 3 && selectedGenre && window._userData) window._userData.genre = selectedGenre;
     document.getElementById('fs' + n).classList.remove('active');
     document.getElementById('sd' + n).classList.remove('active');
     document.getElementById('sd' + n).classList.add('done');
@@ -3799,6 +3843,34 @@ Aminata</textarea>
         enregistrerDemandeAdmin(ref, info.name, phone, now);
       }
     }, 900);
+  }
+
+
+  function selGenre(genre) {
+    selectedGenre = genre;
+    // Réinitialiser tous les boutons genre
+    ['genre-homme','genre-femme','genre-homme-prop','genre-femme-prop'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) {
+        el.classList.remove('sel');
+        el.querySelector('.rdot').style.background = '';
+        el.querySelector('.rdot').style.borderColor = '';
+      }
+    });
+    // Activer le bouton sélectionné
+    var suffix = genre === 'Homme' ? 'homme' : 'femme';
+    ['genre-' + suffix, 'genre-' + suffix + '-prop'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.classList.add('sel');
+    });
+    // Masquer les erreurs
+    ['genre-error','genre-error-prop'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.style.display = 'none';
+    });
+    // Sauvegarder dans _userData
+    if (window._userData) window._userData.genre = genre;
+    console.log('[GENRE]', genre);
   }
 
   function selRadio(groupId, el) {
