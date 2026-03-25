@@ -1659,6 +1659,8 @@
 
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<!-- Supabase SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 </head>
 <body>
 
@@ -3461,40 +3463,42 @@ Aminata</textarea>
       return;
     }
 
-    var result = dbLogin(email, pwd);
+    // Bouton loading
+    var btn = document.querySelector('#page-connexion .btn-primary');
+    if (btn) { btn.textContent = 'Connexion…'; btn.disabled = true; }
 
-    if (!result.ok) {
-      if (err) {
-        err.innerHTML = result.error === 'not_found'
-          ? 'Aucun compte trouvé avec cet email.'
-          : 'Mot de passe incorrect. Réessayez.';
-        err.style.display = 'flex';
+    var loginPromise = sb ? sbLogin(email, pwd) : Promise.resolve(dbLogin(email, pwd));
+    loginPromise.then(function(result) {
+      if (btn) { btn.textContent = 'Se connecter →'; btn.disabled = false; }
+      if (!result.ok) {
+        var msg = result.error === 'not_found'  ? 'Aucun compte trouvé avec cet email.'
+                : result.error === 'rejected'   ? 'Votre compte a été refusé. Contactez l’admin.'
+                : result.error === 'pending'    ? '⏳ Compte en attente de validation (délai max : 24h).'
+                : 'Mot de passe incorrect. Réessayez.';
+        if (err) { err.innerHTML = msg; err.style.display = 'flex'; }
+        var card = document.querySelector('#page-connexion [style*="background:#fff"]');
+        if (card) { card.style.animation = 'shake 0.4s ease'; setTimeout(function() { card.style.animation = ''; }, 400); }
+        return;
       }
-      // Animation shake
-      var card = err?.closest('[style*="background:#fff"]') || err?.parentElement;
-      if (card) { card.style.animation = 'shake 0.4s ease'; setTimeout(function() { card.style.animation = ''; }, 400); }
-      return;
-    }
-
-    // Compte en attente de validation
-    if (result.user.statut === 'en_attente') {
-      if (err) {
-        err.innerHTML = '\u23f3 Votre compte est en attente de validation. Nous vous contacterons dès confirmation.';
-        err.style.display = 'flex';
+      if (err) err.style.display = 'none';
+      dbSetSession(result.user);
+      currentUser = result.user;
+      window._userData    = result.user;
+      window._selectedRole = result.user.role;
+      goToApp();
+    }).catch(function(e) {
+      if (btn) { btn.textContent = 'Se connecter →'; btn.disabled = false; }
+      var r = dbLogin(email, pwd);
+      if (!r.ok) {
+        if (err) { err.innerHTML = 'Connexion impossible. Vérifiez vos identifiants.'; err.style.display = 'flex'; }
+        return;
       }
-      return;
-    }
-
-    // Connexion réussie
-    if (err) err.style.display = 'none';
-    dbSetSession(result.user);
-    currentUser = result.user;
-
-    // Restaurer les infos dans window._userData pour goToApp
-    window._userData = result.user;
-    window._selectedRole = result.user.role;
-
-    goToApp();
+      dbSetSession(r.user);
+      currentUser = r.user;
+      window._userData     = r.user;
+      window._selectedRole = r.user.role;
+      goToApp();
+    });
   }
 
   function togglePwd(inputId, btn) {
@@ -3650,6 +3654,146 @@ Aminata</textarea>
 
 
   // ============================================================
+
+  // ════════════════════════════════════════════════
+  // SUPABASE — Base de données en ligne
+  // ════════════════════════════════════════════════
+
+  function initSupabase() {
+    try {
+      if (typeof supabase !== 'undefined' && supabase.createClient) {
+        sb = supabase.createClient(SB_URL, SB_ANON);
+        console.log('[SB] Client initialise');
+        // Pre-charger les utilisateurs dans l'admin si connecte
+        if (adminLoggedIn) sbLoadAllUsers();
+      }
+    } catch(e) { console.warn('[SB] Init error:', e); }
+  }
+
+  // Creer utilisateur dans Supabase + localStorage
+  function sbCreateUser(userData) {
+    // Sauvegarder localement d'abord
+    var localResult = dbCreateUser(userData);
+    if (!localResult.ok) return Promise.resolve(localResult);
+
+    // Puis Supabase si disponible
+    if (!sb) return Promise.resolve(localResult);
+
+    return sb.from('utilisateurs').insert({
+      id:            localResult.user.id,
+      prenom:        userData.prenom || '',
+      nom:           userData.nom || '',
+      email:         userData.email,
+      telephone:     userData.tel || '',
+      etablissement: userData.etablissement || '',
+      role:          userData.role || '',
+      genre:         userData.genre || '',
+      statut:        'en_attente',
+      paiement_ref:  userData.paiementRef || '',
+      created_at:    new Date().toISOString()
+    }).then(function(res) {
+      if (res.error) console.warn('[SB] Insert:', res.error.message);
+      else console.log('[SB] User cree en DB:', userData.email);
+      return localResult;
+    }).catch(function(e) {
+      console.warn('[SB] Create error:', e);
+      return localResult;
+    });
+  }
+
+  // Login avec Supabase + localStorage
+  function sbLogin(email, password) {
+    var localResult = dbLogin(email, password);
+    if (!localResult.ok || !sb) return Promise.resolve(localResult);
+
+    // Synchroniser le statut depuis Supabase
+    return sb.from('utilisateurs').select('statut').eq('email', email).maybeSingle()
+      .then(function(res) {
+        if (!res.error && res.data) {
+          var sbStatut = res.data.statut;
+          if (sbStatut === 'actif') {
+            localResult.user.statut = 'actif';
+            dbUpdateStatus(email, 'actif');
+          } else if (sbStatut === 'rejete') {
+            localResult.user.statut = 'rejete';
+            return { ok: false, error: 'rejected' };
+          } else if (sbStatut === 'en_attente') {
+            localResult.user.statut = 'en_attente';
+            return { ok: false, error: 'pending' };
+          }
+        }
+        return localResult;
+      }).catch(function() { return localResult; });
+  }
+
+  // Mettre a jour le statut dans les deux bases
+  function sbUpdateStatus(email, statut) {
+    dbUpdateStatus(email, statut);
+    if (!sb) return;
+    sb.from('utilisateurs')
+      .update({ statut: statut, updated_at: new Date().toISOString() })
+      .eq('email', email)
+      .then(function(res) {
+        if (!res.error) console.log('[SB] Statut:', email, '->', statut);
+      });
+  }
+
+  // Charger tous les utilisateurs depuis Supabase pour l'admin
+  function sbLoadAllUsers() {
+    if (!sb) { adminSyncFromDB(); adminRenderList(); adminUpdateStats(); return; }
+    sb.from('utilisateurs').select('*').order('created_at', { ascending: false })
+      .then(function(res) {
+        if (res.error) { console.warn('[SB] Load:', res.error.message); return; }
+        var data = res.data || [];
+        data.forEach(function(u) {
+          var ex = adminUsers.find(function(a) { return a.email === u.email; });
+          var mapped = {
+            id:            u.id,
+            nom:           (u.prenom||'') + ' ' + (u.nom||''),
+            email:         u.email,
+            tel:           u.telephone || '',
+            operateur:     u.operateur || 'N/A',
+            ref:           u.paiement_ref || u.id,
+            montant:       2000,
+            role:          u.role || '',
+            genre:         u.genre || '',
+            etablissement: u.etablissement || '',
+            statut:        u.statut === 'actif' ? 'ok' : (u.statut === 'rejete' ? 'rejected' : 'pending'),
+            date:          u.created_at,
+            emailSent:     false
+          };
+          if (!ex) adminUsers.push(mapped);
+          else ex.statut = mapped.statut;
+        });
+        console.log('[SB] ' + data.length + ' users charges');
+        adminRenderList();
+        adminUpdateStats();
+      }).catch(function(e) { console.warn('[SB] Load error:', e); });
+  }
+
+  // Sauvegarder message contact
+  function sbSaveContact(data) {
+    if (!sb) return;
+    sb.from('messages_contact').insert({
+      nom: data.nom, email: data.email, objet: data.objet,
+      message: data.message, type: data.type || 'autre',
+      newsletter: data.newsletter || false,
+      created_at: new Date().toISOString()
+    }).then(function(r) {
+      if (!r.error) console.log('[SB] Contact sauvegarde');
+    });
+  }
+
+  // Abonner newsletter
+  function sbSaveNewsletter(email, nom) {
+    if (!sb) return;
+    sb.from('newsletter').upsert({ email: email, nom: nom||'', created_at: new Date().toISOString() },
+      { onConflict: 'email' }).then(function(r) {
+      if (!r.error) console.log('[SB] Newsletter:', email);
+    });
+  }
+
+
   // BASE DE DONNÉES UTILISATEURS — localStorage persistant
   // ============================================================
 
@@ -3849,22 +3993,33 @@ Aminata</textarea>
   // Enregistrer l'utilisateur en DB au moment du paiement confirmé
   function enregistrerUtilisateurDB(ref) {
     if (!window._userData) return;
-    var result = dbCreateUser({
-      prenom:        window._userData.prenom,
-      nom:           window._userData.nom,
+    var data = {
+      prenom:        window._userData.prenom || '',
+      nom:           window._userData.nom || '',
       email:         window._userData.email,
-      tel:           window._userData.tel,
-      etablissement: window._userData.etablissement,
-      role:          window._userData.role,
+      tel:           window._userData.tel || '',
+      etablissement: window._userData.etablissement || '',
+      role:          window._userData.role || 'chercheur',
+      genre:         window._userData.genre || '',
       password:      window._userData.password,
       paiementRef:   ref
+    };
+    // Utiliser Supabase si disponible, sinon localStorage
+    var promise = sb ? sbCreateUser(data) : Promise.resolve(dbCreateUser(data));
+    promise.then(function(result) {
+      if (result && result.ok) {
+        console.log('[DB] Utilisateur enregistre:', data.email);
+        currentUser = result.user;
+        dbSetSession(result.user);
+      } else if (result) {
+        console.warn('[DB] Erreur:', result.error);
+      }
+    }).catch(function(e) {
+      console.warn('[DB] Error:', e);
+      // Fallback
+      var r = dbCreateUser(data);
+      if (r.ok) { currentUser = r.user; dbSetSession(r.user); }
     });
-    if (result.ok) {
-      console.log('[DB] Utilisateur créé:', result.user.email);
-      currentUser = result.user;
-    } else {
-      console.warn('[DB] Erreur création:', result.error);
-    }
   }
 
 
@@ -3878,32 +4033,70 @@ Aminata</textarea>
   }
 
   function envoyerCodeVerification(email, prenom) {
-    var code = genererCode();
-    console.log('[VERIFY] Code:', code);
+    var code = genererCode(); // stocké dans verifyCode global
+    console.log('[VERIFY] ============================');
+    console.log('[VERIFY] Code généré:', code);
+    console.log('[VERIFY] Email destinataire:', email);
+    console.log('[VERIFY] Service ID:', EMAILJS_SERVICE_ID);
+    console.log('[VERIFY] Template ID:', EMAILJS_TEMPLATE_VERIFY);
+    console.log('[VERIFY] Public Key:', EMAILJS_PUBLIC_KEY ? 'OK' : 'MANQUANT');
+    console.log('[VERIFY] emailjs chargé:', typeof emailjs !== 'undefined');
 
-    // Afficher le code directement dans l'interface (méthode principale)
+    // Mettre à jour l'affichage de l'email destinataire
     afficherCodeDirect(code, email);
 
-    // Tentative d'envoi par email en parallèle (bonus)
-    if (typeof emailjs !== 'undefined') {
-      emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_VERIFY, {
-        to_email:    email,
-        nom_complet: prenom || 'Utilisateur',
-        code:        code,
-        expiry:      '10 minutes'
-      }).then(function() {
-        console.log('[VERIFY] Email envoyé à', email);
+    // Envoi EmailJS
+    if (typeof emailjs === 'undefined') {
+      console.error('[VERIFY] EmailJS SDK non chargé !');
+      afficherErreurEnvoi('Le service email n’est pas disponible.');
+      return;
+    }
+
+    // S'assurer que emailjs est bien initialisé
+    try { emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY }); } catch(e) {}
+
+    var params = {
+      to_email:    email,
+      nom_complet: prenom || 'Utilisateur',
+      code:        code,
+      expiry:      '10 minutes'
+    };
+    console.log('[VERIFY] Envoi avec params:', JSON.stringify(params));
+
+    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_VERIFY, params)
+      .then(function(response) {
+        console.log('[VERIFY] ✅ Email envoyé ! Status:', response.status, response.text);
         var note = document.getElementById('verify-email-note');
-        if (note) note.innerHTML = (
-          '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" style="flex-shrink:0">'
-          + '<path d="M2 8L6 12L14 4" stroke="#1D9E75" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>'
-          + '</svg> Code aussi envoyé sur <strong>' + email + '</strong>'
+        if (note) {
+          note.style.background = 'var(--green-light)';
+          note.style.color = 'var(--green-dark)';
+          note.innerHTML = (
+            '<svg width="16" height="16" viewBox="0 0 16 16" fill="none">'
+            + '<path d="M2 8L6 12L14 4" stroke="#1D9E75" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'
+            + '</svg>'
+            + ' Code envoyé sur <strong>' + email + '</strong> — Vérifiez aussi vos spams.'
+          );
+        }
+      })
+      .catch(function(error) {
+        console.error('[VERIFY] ❌ Erreur EmailJS:', error);
+        console.error('[VERIFY] Détail:', JSON.stringify(error));
+        afficherErreurEnvoi(
+          'Erreur d’envoi (code : ' + (error.status || error.text || 'inconnu') + '). '
+          + 'Vérifiez votre email et réessayez.'
         );
-      }).catch(function(e) {
-        console.warn('[VERIFY] Email non envoyé (template manquant ?):', e.text || e);
       });
+  }
+
+  function afficherErreurEnvoi(msg) {
+    var note = document.getElementById('verify-email-note');
+    if (note) {
+      note.style.background = '#FAECE7';
+      note.style.color = 'var(--coral)';
+      note.textContent = '⚠️ ' + msg;
     }
   }
+
 
   function afficherCodeDirect(code, email) {
     // Mettre à jour l'affichage de l'email
@@ -4372,6 +4565,7 @@ Aminata</textarea>
       document.getElementById('admin-auth-overlay').style.display = 'none';
       document.getElementById('page-admin').style.display = 'block';
       adminSyncFromDB();
+      sbLoadAllUsers();
       chargerDemandesLocalStorage();
       adminRenderList();
       adminRenderNotifs();
@@ -4534,6 +4728,8 @@ Aminata</textarea>
     if (!u) return;
     u.statut = 'ok';
     u.validatedAt = new Date().toISOString();
+    // Mettre à jour dans Supabase
+    if (u.email) sbUpdateStatus(u.email, 'actif');
     adminRenderList();
     adminRenderNotifs();
     sauvegarderDemandesLocalStorage();
@@ -4890,6 +5086,11 @@ Aminata</textarea>
   const EMAILJS_TEMPLATE_USER    = 'template_cci_user';
   const EMAILJS_TEMPLATE_VERIFY  = 'template_cci_verify'; // Vérification email
   const EMAILJS_PUBLIC_KEY       = '4YafU35KGOv8wj0Vi';
+
+  // ══ SUPABASE CONFIG ══
+  const SB_URL  = 'https://reoprkiwdmrnqdfxwqqb.supabase.co';
+  const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJlb3Bya2l3ZG1ybnFkZnh3cXFiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI5OTQ0NjgsImV4cCI6MjA1ODU3MDQ2OH0.QZS1mevCpQnPjH4RiLHKVEn4j_5qIxEoM9nWsIhxgHw';
+  var sb = null; // client Supabase initialisé au chargement
   // Service dedie aux messages contact (coulibalysieledabila@gmail.com)
   const EMAILJS_SERVICE_CONTACT  = 'service_cci_contact';
   const EMAILJS_TEMPLATE_CONTACT = 'template_cci_contact';
@@ -5064,7 +5265,7 @@ Aminata</textarea>
     paymentValidated = true;
     // Activer le compte en base de données
     if (window._userData && window._userData.email) {
-      dbUpdateStatus(window._userData.email, 'actif');
+      sbUpdateStatus(window._userData.email, 'actif');
       if (currentUser) currentUser.statut = 'actif';
       console.log('[DB] Compte activé:', window._userData.email);
     }
@@ -5154,6 +5355,7 @@ Aminata</textarea>
       }).catch(function() {
         // Fallback: sauvegarder localement quand meme
         sauvegarderMessageContact(nom, email, objet, message, newsletter);
+      sbSaveContact({ nom, email, objet, message, newsletter, type: contactType });
         sucEl.style.display = 'block';
         btn.style.display = 'none';
       });
@@ -5174,6 +5376,7 @@ Aminata</textarea>
       return;
     }
     sauvegarderAbonne(email, '');
+    sbSaveNewsletter(email, '');
     msgEl.textContent = '✓ Vous êtes abonné(e) ! Merci.';
     msgEl.style.color = 'rgba(255,255,255,0.95)';
     msgEl.style.display = 'block';
@@ -5706,6 +5909,23 @@ Aminata</textarea>
     logSync('⬇️ Chargement depuis Supabase...');
   }
 
+  function copierSQL() {
+    var el = document.getElementById('sql-setup');
+    if (!el) return;
+    navigator.clipboard.writeText(el.textContent).then(function() {
+      adminShowToast('SQL copié dans le presse-papiers !', '#1D9E75');
+    }).catch(function() {
+      // Fallback
+      var ta = document.createElement('textarea');
+      ta.value = el.textContent;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      adminShowToast('SQL copié !', '#1D9E75');
+    });
+  }
+
   function logSync(msg) {
     var el = document.getElementById('sync-log');
     if (!el) return;
@@ -5773,6 +5993,7 @@ Aminata</textarea>
   }
 
   // Init
+  initSupabase();
   updateCharCount();
   // Vérifier si une session existe (reconnexion automatique)
   var restoredUser = dbRestoreSession();
@@ -6194,6 +6415,48 @@ Aminata</textarea>
             </div>
             <div id="sync-log" style="display:none;margin-top:12px;background:#0B1120;border-radius:8px;padding:10px 14px;font-size:11px;color:#64748b;font-family:monospace;max-height:100px;overflow-y:auto;"></div>
           </div>
+        </div>
+
+        <!-- SQL Setup -->
+        <div style="background:#141C2E;border:1px solid #1e293b;border-radius:16px;padding:20px;margin-bottom:1.5rem;">
+          <div style="font-size:13px;font-weight:600;color:#F1F5F9;margin-bottom:12px;">📋 Script SQL — Créer les tables</div>
+          <p style="font-size:12px;color:#64748b;margin-bottom:12px;">Exécutez ce script dans <strong style="color:#94a3b8;">Supabase → SQL Editor</strong> pour initialiser les tables.</p>
+          <div style="background:#0B1120;border-radius:10px;padding:14px;font-size:11px;color:#94a3b8;font-family:monospace;white-space:pre-wrap;max-height:200px;overflow-y:auto;line-height:1.6;" id="sql-setup">-- Table utilisateurs
+CREATE TABLE IF NOT EXISTS utilisateurs (
+  id            TEXT PRIMARY KEY,
+  prenom        TEXT, nom TEXT, email TEXT UNIQUE NOT NULL,
+  telephone     TEXT, etablissement TEXT, role TEXT, genre TEXT,
+  statut        TEXT DEFAULT 'en_attente',
+  paiement_ref  TEXT, operateur TEXT,
+  created_at    TIMESTAMPTZ DEFAULT now(),
+  updated_at    TIMESTAMPTZ
+);
+
+-- Table messages contact
+CREATE TABLE IF NOT EXISTS messages_contact (
+  id         BIGSERIAL PRIMARY KEY,
+  nom TEXT, email TEXT, objet TEXT, message TEXT,
+  type TEXT, newsletter BOOLEAN DEFAULT false,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- Table newsletter
+CREATE TABLE IF NOT EXISTS newsletter (
+  id         BIGSERIAL PRIMARY KEY,
+  email TEXT UNIQUE NOT NULL, nom TEXT,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- Activer RLS (Row Level Security)
+ALTER TABLE utilisateurs     ENABLE ROW LEVEL SECURITY;
+ALTER TABLE messages_contact ENABLE ROW LEVEL SECURITY;
+ALTER TABLE newsletter       ENABLE ROW LEVEL SECURITY;
+
+-- Policies pour anon (lecture/écriture publique)
+CREATE POLICY "anon_all" ON utilisateurs     FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "anon_all" ON messages_contact FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "anon_all" ON newsletter       FOR ALL USING (true) WITH CHECK (true);</div>
+          <button onclick="copierSQL()" style="margin-top:10px;background:#1e293b;border:1px solid #334155;border-radius:8px;padding:8px 14px;font-size:12px;color:#94a3b8;cursor:pointer;">📋 Copier le SQL</button>
         </div>
 
         <!-- Table Supabase live -->
