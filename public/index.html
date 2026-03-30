@@ -1330,6 +1330,7 @@
   @keyframes fadeInStep { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 </head>
 <body>
 
@@ -3286,6 +3287,112 @@ Aminata</textarea>
 
 
   // ============================================================
+
+  // ══════════════════════════════════════════════
+  // SUPABASE — Fonctions base de données en ligne
+  // ══════════════════════════════════════════════
+
+  function initSupabase() {
+    try {
+      if (typeof supabase !== 'undefined' && supabase.createClient) {
+        sb = supabase.createClient(SB_URL, SB_ANON);
+        console.log('[SB] Connecte a', SB_URL);
+      } else {
+        console.warn('[SB] SDK non charge');
+      }
+    } catch(e) { console.warn('[SB] Init:', e.message); }
+  }
+
+  // Inserer utilisateur dans Supabase
+  function sbInsertUser(user, paiementRef) {
+    if (!sb) { console.warn('[SB] Non connecte'); return Promise.resolve(); }
+    return sb.from('utilisateurs').upsert({
+      id:            user.id,
+      prenom:        user.prenom || '',
+      nom:           user.nom || '',
+      email:         user.email,
+      telephone:     user.tel || '',
+      etablissement: user.etablissement || '',
+      role:          user.role || '',
+      genre:         user.genre || '',
+      statut:        'en_attente',
+      paiement_ref:  paiementRef || '',
+      created_at:    new Date().toISOString()
+    }, { onConflict: 'email' }).then(function(r) {
+      if (r.error) console.error('[SB] Insert error:', r.error.message);
+      else console.log('[SB] Utilisateur sauvegarde:', user.email);
+    });
+  }
+
+  // Mettre a jour le statut
+  function sbUpdateStatut(email, statut) {
+    if (!sb) return;
+    sb.from('utilisateurs').update({
+      statut: statut,
+      updated_at: new Date().toISOString()
+    }).eq('email', email).then(function(r) {
+      if (r.error) console.error('[SB] Update statut:', r.error.message);
+      else console.log('[SB] Statut mis a jour:', email, '->', statut);
+    });
+  }
+
+  // Charger utilisateurs pour l'admin
+  function sbChargerUtilisateurs() {
+    if (!sb) { adminSyncFromDB(); adminRenderList(); adminUpdateStats(); return; }
+    sb.from('utilisateurs').select('*').order('created_at', { ascending: false })
+    .then(function(r) {
+      if (r.error) { console.warn('[SB] Chargement:', r.error.message); adminSyncFromDB(); adminRenderList(); adminUpdateStats(); return; }
+      var data = r.data || [];
+      console.log('[SB] ' + data.length + ' utilisateurs charges');
+      // Fusionner avec adminUsers
+      data.forEach(function(u) {
+        var ex = adminUsers.find(function(a) { return a.email === u.email; });
+        var row = {
+          id:            u.id || 'SB-' + u.email,
+          nom:           (u.prenom||'') + ' ' + (u.nom||''),
+          email:         u.email,
+          tel:           u.telephone || '',
+          operateur:     u.operateur || 'N/A',
+          ref:           u.paiement_ref || u.id || '',
+          montant:       2000,
+          role:          u.role || '',
+          genre:         u.genre || '',
+          etablissement: u.etablissement || '',
+          statut:        u.statut === 'actif' ? 'ok' : (u.statut === 'rejete' ? 'rejected' : 'pending'),
+          date:          u.created_at || new Date().toISOString(),
+          emailSent:     false
+        };
+        if (!ex) adminUsers.push(row);
+        else { ex.statut = row.statut; ex.ref = row.ref || ex.ref; }
+      });
+      adminRenderList();
+      adminUpdateStats();
+    });
+  }
+
+  // Sauvegarder message contact
+  function sbInsertContact(data) {
+    if (!sb) return;
+    sb.from('messages_contact').insert({
+      nom: data.nom || '', email: data.email || '',
+      objet: data.objet || '', message: data.message || '',
+      type: data.type || 'autre', newsletter: !!data.newsletter,
+      created_at: new Date().toISOString()
+    }).then(function(r) {
+      if (!r.error) console.log('[SB] Contact sauvegarde');
+      else console.warn('[SB] Contact:', r.error.message);
+    });
+  }
+
+  // Abonner newsletter
+  function sbInsertNewsletter(email, nom) {
+    if (!sb) return;
+    sb.from('newsletter').upsert({ email: email, nom: nom||'', created_at: new Date().toISOString() },
+      { onConflict: 'email' }).then(function(r) {
+      if (!r.error) console.log('[SB] Newsletter:', email);
+    });
+  }
+
   // BASE DE DONNÉES UTILISATEURS — localStorage persistant
   // ============================================================
 
@@ -3485,22 +3592,28 @@ Aminata</textarea>
   // Enregistrer l'utilisateur en DB au moment du paiement confirmé
   function enregistrerUtilisateurDB(ref) {
     if (!window._userData) return;
-    var result = dbCreateUser({
-      prenom:        window._userData.prenom,
-      nom:           window._userData.nom,
+    var data = {
+      prenom:        window._userData.prenom || '',
+      nom:           window._userData.nom || '',
       email:         window._userData.email,
-      tel:           window._userData.tel,
-      etablissement: window._userData.etablissement,
-      role:          window._userData.role,
+      tel:           window._userData.tel || '',
+      etablissement: window._userData.etablissement || '',
+      role:          window._userData.role || 'chercheur',
+      genre:         window._userData.genre || '',
       password:      window._userData.password,
       paiementRef:   ref
-    });
+    };
+    // Sauvegarder en localStorage
+    var result = dbCreateUser(data);
     if (result.ok) {
-      console.log('[DB] Utilisateur créé:', result.user.email);
       currentUser = result.user;
-    } else {
-      console.warn('[DB] Erreur création:', result.error);
+      dbSetSession(result.user);
+      console.log('[DB] Utilisateur cree (local):', data.email);
+    } else if (result.error !== 'email_exists') {
+      console.warn('[DB] Erreur locale:', result.error);
     }
+    // Sauvegarder dans Supabase
+    sbInsertUser(data, ref);
   }
 
 
@@ -3931,6 +4044,7 @@ Aminata</textarea>
       document.getElementById('page-admin').style.display = 'block';
       adminSyncFromDB();
       chargerDemandesLocalStorage();
+      sbChargerUtilisateurs();
       adminRenderList();
       adminRenderNotifs();
     } else {
@@ -4092,6 +4206,7 @@ Aminata</textarea>
     if (!u) return;
     u.statut = 'ok';
     u.validatedAt = new Date().toISOString();
+    if (u.email) sbUpdateStatut(u.email, 'actif');
     adminRenderList();
     adminRenderNotifs();
     sauvegarderDemandesLocalStorage();
@@ -4448,6 +4563,11 @@ Aminata</textarea>
   const EMAILJS_TEMPLATE_USER    = 'template_cci_user';
   const EMAILJS_TEMPLATE_VERIFY  = 'template_cci_verify'; // Vérification email
   const EMAILJS_PUBLIC_KEY       = '4YafU35KGOv8wj0Vi';
+
+  // ══ SUPABASE ══
+  const SB_URL  = 'https://reoprkiwdmrnqdfxwqqb.supabase.co';
+  const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJlb3Bya2l3ZG1ybnFkZnh3cXFiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI5OTQ0NjgsImV4cCI6MjA1ODU3MDQ2OH0.QZS1mevCpQnPjH4RiLHKVEn4j_5qIxEoM9nWsIhxgHw';
+  var sb = null;
   // Service dedie aux messages contact (coulibalysieledabila@gmail.com)
   const EMAILJS_SERVICE_CONTACT  = 'service_cci_contact';
   const EMAILJS_TEMPLATE_CONTACT = 'template_cci_contact';
@@ -4623,8 +4743,9 @@ Aminata</textarea>
     // Activer le compte en base de données
     if (window._userData && window._userData.email) {
       dbUpdateStatus(window._userData.email, 'actif');
+      sbUpdateStatut(window._userData.email, 'actif');
       if (currentUser) currentUser.statut = 'actif';
-      console.log('[DB] Compte activé:', window._userData.email);
+      console.log('[DB] Compte active:', window._userData.email);
     }
     const overlay = document.getElementById('dash-lock-overlay');
     if (!overlay) return;
@@ -4712,6 +4833,7 @@ Aminata</textarea>
       }).catch(function() {
         // Fallback: sauvegarder localement quand meme
         sauvegarderMessageContact(nom, email, objet, message, newsletter);
+      sbInsertContact({ nom, email, objet, message, newsletter, type: contactType });
         sucEl.style.display = 'block';
         btn.style.display = 'none';
       });
@@ -4732,6 +4854,7 @@ Aminata</textarea>
       return;
     }
     sauvegarderAbonne(email, '');
+    sbInsertNewsletter(email, '');
     msgEl.textContent = '✓ Vous êtes abonné(e) ! Merci.';
     msgEl.style.color = 'rgba(255,255,255,0.95)';
     msgEl.style.display = 'block';
