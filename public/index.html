@@ -45,10 +45,6 @@
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
-  html, body {
-    overflow-x: hidden;
-    -webkit-text-size-adjust: 100%;
-  }
   body {
     font-family: 'DM Sans', sans-serif;
     background: #fff;
@@ -338,7 +334,7 @@
   .footer-links a:hover { color: var(--text-muted); }
 
   /* ======= INSCRIPTION ======= */
-  .inscription-wrap { max-width: 640px; margin: 0 auto; padding: 3rem 2rem; width: 100%; box-sizing: border-box; }
+  .inscription-wrap { max-width: 640px; margin: 0 auto; padding: 3rem 2rem; }
   .form-hdr { margin-bottom: 2.5rem; }
   .form-hdr h2 { font-family: 'DM Serif Display', serif; font-size: 28px; font-weight: 400; color: var(--text); margin-bottom: 8px; }
   .form-hdr p { font-size: 14px; color: var(--text-muted); }
@@ -441,7 +437,7 @@
   .confirm-row span:last-child { font-weight: 500; color: var(--text); }
 
   /* ======= DASHBOARD ======= */
-  .dash-wrap { padding: 2rem 2.5rem; max-width: 960px; margin: 0 auto; position: relative; width: 100%; box-sizing: border-box; }
+  .dash-wrap { padding: 2rem 2.5rem; max-width: 960px; margin: 0 auto; position: relative; }
   .dash-hdr { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
   .dash-hdr h2 { font-family: 'DM Serif Display', serif; font-size: 26px; font-weight: 400; color: var(--text); }
   .dash-hdr p { font-size: 14px; color: var(--text-muted); margin-top: 4px; }
@@ -570,7 +566,7 @@
   .btn-panel-o:hover { background: var(--gray-50); }
 
   /* ======= MEDIATION ======= */
-  .med-wrap { padding: 2rem 2.5rem; max-width: 960px; margin: 0 auto; width: 100%; box-sizing: border-box; }
+  .med-wrap { padding: 2rem 2.5rem; max-width: 960px; margin: 0 auto; }
   .med-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 2rem; }
   .med-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.4rem; }
   .med-card h3 { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 1.1rem; }
@@ -1332,335 +1328,8 @@
   @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
   .fstep { animation: fadeInStep 0.28s ease; }
   @keyframes fadeInStep { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
-
-  /* ══════════════════════════════════════════════
-     RESPONSIVE COMPLET FINAL — Tous appareils
-  ══════════════════════════════════════════════ */
-
-  @media (max-width: 768px) {
-
-    /* Sidebar → bottom bar */
-    #app-sidebar { top:auto !important;bottom:0 !important;left:0 !important;right:0 !important;width:100% !important;height:64px !important; }
-    .sidebar-nav { flex-direction:row !important;width:100% !important;height:64px !important;padding:0 8px !important;border-right:none !important;border-top:1px solid var(--border) !important;box-shadow:0 -2px 16px rgba(0,0,0,.08) !important;justify-content:space-around !important;overflow:visible !important; }
-    .sidebar-nav:hover { width:100% !important; }
-    .sb-logo,.sb-sep { display:none !important; }
-    .sb-links { flex-direction:row !important;gap:0 !important;padding:0 !important;flex:1 !important;justify-content:space-around !important; }
-    .sb-label { display:none !important; }
-    .sb-item { padding:6px 10px !important;flex-direction:column !important;gap:2px !important;min-height:unset !important; }
-    .sb-item:hover { transform:none !important; }
-    .sb-icon { width:36px !important;height:36px !important; }
-    .page-with-sidebar { margin-left:0 !important;margin-bottom:68px !important; }
-
-    /* Admin grilles */
-    [style*="grid-template-columns:repeat(4,1fr)"] { grid-template-columns:repeat(2,1fr) !important; }
-    [style*="grid-template-columns:2fr 1fr"] { grid-template-columns:1fr !important; }
-    [style*="grid-template-columns:1fr 1fr"] { grid-template-columns:1fr !important; }
-    [style*="grid-template-columns:2fr 2fr 1fr 1fr 1fr 120px"] { display:none !important; }
-    #admin-user-list > div { display:flex !important;flex-wrap:wrap !important;padding:12px !important;align-items:center !important;gap:6px !important; }
-    .admin-tab { padding:7px 10px !important;font-size:12px !important; }
-
-    /* Contact */
-    #page-contact > div { padding:2rem 1rem !important; }
-    #page-contact [style*="grid-template-columns:repeat(3,1fr)"] { grid-template-columns:1fr !important; }
-    #page-contact [style*="grid-template-columns:1fr 1fr"] { grid-template-columns:1fr !important; }
-    #newsletter-email { min-width:unset !important;width:100% !important; }
-
-    /* Connexion */
-    #page-connexion [style*="max-width:480px"] { padding:2rem 1rem !important; }
-
-    /* Verify code */
-    .verify-digit { width:40px !important;height:48px !important;font-size:18px !important; }
-    #verify-code-inputs { gap:6px !important;justify-content:center !important; }
-
-    /* Genre boutons */
-    #rg-genre,#rg-genre-prop { flex-direction:column !important;gap:8px !important; }
-
-    /* Paiement */
-    #payment-methods { grid-template-columns:1fr 1fr !important;gap:8px !important; }
-
-    /* Modale verrou */
-    #lock-modal-box { padding:2rem 1.25rem !important;margin:1rem !important;max-width:calc(100% - 2rem) !important; }
-
-    /* Footer */
-    .footer { flex-direction:column !important;gap:1rem !important;text-align:center !important;padding:1.5rem 1rem !important; }
-    .footer-links { flex-wrap:wrap !important;justify-content:center !important; }
-  }
-
-  @media (max-width: 480px) {
-    /* Sidebar icons plus petits */
-    .sb-item { padding:4px 8px !important; }
-    .sb-icon { width:30px !important;height:30px !important; }
-    /* Paiement 1 colonne */
-    #payment-methods { grid-template-columns:1fr !important; }
-    /* Code vérif plus petit */
-    .verify-digit { width:36px !important;height:44px !important;font-size:16px !important; }
-    /* Admin onglets */
-    .admin-tab { font-size:10px !important;padding:6px 8px !important; }
-    /* Stats */
-    .stat-card { min-width:100% !important;border-right:none !important; }
-    /* Cacher bouton Se connecter dans nav pour gagner de la place */
-    .nav-right .btn-outline:not(.btn-primary) { display:none !important; }
-    /* Section titre */
-    .section-title { font-size:19px !important; }
-  }
-
-  /* ═══════════════════════════════════════════════════════════════
-     RESPONSIVE — Android / iOS / Tablette / Ordinateur
-     Breakpoints : 1200px | 1024px | 768px | 600px | 480px | 360px
-  ═══════════════════════════════════════════════════════════════ */
-
-  /* Base — tous les éléments respectent leur conteneur */
-  *, *::before, *::after { box-sizing: border-box; }
-  img, video, svg { max-width: 100%; height: auto; }
-  input, select, textarea, button { max-width: 100%; }
-
-  /* ── Grand écran (max 1200px) ── */
-  @media screen and (max-width: 1200px) {
-    .dash-wrap, .med-wrap, .mat-wrap { padding: 1.75rem 2rem; }
-    .nav { padding: 0.9rem 1.75rem; }
-  }
-
-  /* ── Tablette large (max 1024px) ── */
-  @media screen and (max-width: 1024px) {
-    .nav { padding: 0.85rem 1.5rem; }
-    .dash-wrap, .med-wrap, .mat-wrap { padding: 1.5rem 1.5rem; }
-    .features-grid { grid-template-columns: repeat(2, 1fr); }
-    .testimonials   { grid-template-columns: 1fr; }
-    .dash-grid      { grid-template-columns: 1fr; }
-    .match-grid     { grid-template-columns: 1fr; }
-    .metrics        { grid-template-columns: repeat(2, 1fr); }
-    /* Admin onglets condensés */
-    .admin-tab { padding: 7px 14px; font-size: 12.5px; }
-    [style*="grid-template-columns:repeat(4,1fr)"] { grid-template-columns: repeat(2, 1fr) !important; }
-    [style*="grid-template-columns:2fr 1fr"]       { grid-template-columns: 1fr !important; }
-    /* Sidebar reste compacte */
-    .sidebar-nav { width: 64px !important; }
-    .sidebar-nav:hover { width: 180px; }
-  }
-
-  /* ── Tablette (max 768px) ── */
-  @media screen and (max-width: 768px) {
-
-    /* --- HTML/BODY --- */
-    html, body { overflow-x: hidden !important; }
-
-    /* --- NAV --- */
-    .nav { padding: 0.8rem 1rem !important; }
-    .nav-links { display: none !important; }
-    .logo { font-size: 14px !important; }
-    .nav-right { gap: 6px !important; }
-
-    /* --- SIDEBAR → BOTTOM BAR --- */
-    #app-sidebar {
-      position: fixed !important;
-      top: auto !important; bottom: 0 !important;
-      left: 0 !important; right: 0 !important;
-      width: 100% !important; height: 64px !important;
-      z-index: 200 !important;
-    }
-    .sidebar-nav {
-      flex-direction: row !important;
-      width: 100% !important; height: 64px !important;
-      padding: 0 4px !important;
-      border-right: none !important;
-      border-top: 1px solid var(--border) !important;
-      box-shadow: 0 -4px 20px rgba(0,0,0,.10) !important;
-      justify-content: space-around !important;
-      align-items: center !important;
-      overflow: visible !important;
-      border-radius: 0 !important;
-    }
-    .sidebar-nav:hover { width: 100% !important; }
-    .sb-logo, .sb-sep   { display: none !important; }
-    .sb-links {
-      flex-direction: row !important;
-      gap: 0 !important; padding: 0 !important;
-      flex: 1 !important;
-      justify-content: space-around !important;
-      align-items: center !important;
-    }
-    .sb-label         { display: none !important; }
-    .sb-item          { padding: 8px 12px !important; flex-direction: column !important; gap: 2px !important; min-height: unset !important; width: auto !important; transform: none !important; }
-    .sb-item:hover    { transform: none !important; }
-    .sb-icon          { width: 36px !important; height: 36px !important; }
-    .sb-av            { width: 28px !important; height: 28px !important; font-size: 10px !important; }
-    .sb-lock-icon     { top: 2px !important; right: 2px !important; }
-    .sb-logout        { margin-top: 0 !important; }
-    .page-with-sidebar { margin-left: 0 !important; margin-bottom: 70px !important; }
-
-    /* --- HERO --- */
-    .hero         { padding: 3rem 1rem 2.5rem !important; }
-    .hero h1      { font-size: clamp(22px, 6vw, 30px) !important; }
-    .hero-sub     { font-size: 13.5px !important; line-height: 1.6 !important; }
-    .hero-actions { flex-direction: column !important; align-items: center !important; gap: 10px !important; }
-    .hero-actions .btn { width: 100% !important; max-width: 300px !important; justify-content: center !important; }
-    .hero-deco    { display: none !important; }
-    .hero-social  { flex-direction: column !important; gap: 6px !important; }
-    .badge-pill   { font-size: 11px !important; }
-
-    /* --- STATS BAR --- */
-    .stats-bar { flex-wrap: wrap !important; }
-    .stat-card  { min-width: 50% !important; max-width: 50% !important; flex: none !important; border-right: none !important; border-bottom: 1px solid var(--border) !important; }
-    .stat-card:nth-child(odd)  { border-right: 1px solid var(--border) !important; }
-    .stat-card:last-child      { border-bottom: none !important; }
-    .stat-num   { font-size: 26px !important; }
-    .stat-icon  { width: 36px !important; height: 36px !important; }
-    .stat-label { font-size: 11.5px !important; }
-
-    /* --- SECTIONS --- */
-    .section        { padding: 2.5rem 1rem !important; }
-    .section-title  { font-size: clamp(20px, 5.5vw, 26px) !important; }
-    .section-sub    { font-size: 14px !important; }
-    .features-grid  { grid-template-columns: 1fr !important; gap: 10px !important; }
-    .steps          { flex-direction: column !important; gap: 1.25rem !important; }
-    .step-line      { display: none !important; }
-    .cta-section    { padding: 2rem 1rem !important; }
-    .cta-section h2 { font-size: 20px !important; }
-    .cta-section > div { flex-direction: column !important; align-items: center !important; }
-    .cta-section .btn  { width: 100% !important; max-width: 300px !important; justify-content: center !important; }
-
-    /* --- CARROUSELS --- */
-    .testi-carousel-wrap, .partners-carousel-wrap { gap: 6px !important; max-width: 100% !important; }
-    .testi-track-wrap, .partners-track-wrap { border-radius: 14px !important; }
-    .testi-big      { padding: 1.5rem 1.25rem 1.25rem !important; }
-    .testi-big .testi-quote { font-size: 14px !important; line-height: 1.7 !important; }
-    .partner-card   { width: auto !important; min-width: unset !important; max-width: 220px !important; height: 110px !important; padding: 1.25rem !important; }
-    .partner-slide, .testi-slide { padding: 0 4px !important; }
-    .carousel-btn   { width: 36px !important; height: 36px !important; flex-shrink: 0 !important; }
-    .testi-quote-deco { display: none !important; }
-
-    /* --- FORMULAIRE INSCRIPTION --- */
-    .inscription-wrap { padding: 1.5rem 1rem !important; }
-    .fgrid          { grid-template-columns: 1fr !important; }
-    .fstep          { padding: 1.25rem 1rem !important; }
-    .factions       { flex-direction: column !important; gap: 8px !important; }
-    .factions .btn  { width: 100% !important; justify-content: center !important; }
-    .steps-indicator { overflow-x: auto !important; padding-bottom: 8px !important; -webkit-overflow-scrolling: touch !important; white-space: nowrap !important; }
-    .s-label        { font-size: 9px !important; }
-    .s-circle       { width: 26px !important; height: 26px !important; font-size: 11px !important; }
-    .s-dot          { gap: 4px !important; }
-    .fgroup.full    { grid-column: 1 !important; }
-    .finput, .fselect, .ftextarea { font-size: 14px !important; }
-    /* Radio opts */
-    .radio-opt      { padding: 9px 12px !important; font-size: 13px !important; }
-    .pref-tag       { font-size: 12px !important; padding: 6px 10px !important; }
-    /* Genre */
-    #rg-genre, #rg-genre-prop { flex-direction: row !important; gap: 8px !important; }
-
-    /* --- CODE VÉRIFICATION --- */
-    #verify-code-inputs { gap: 6px !important; flex-wrap: nowrap !important; justify-content: center !important; }
-    .verify-digit   { width: 42px !important; height: 50px !important; font-size: 18px !important; border-radius: 10px !important; }
-
-    /* --- PAIEMENT --- */
-    #payment-methods { grid-template-columns: 1fr 1fr !important; gap: 8px !important; }
-
-    /* --- DASHBOARD --- */
-    .dash-wrap      { padding: 1.25rem 1rem !important; }
-    .dash-hdr       { flex-direction: column !important; gap: 10px !important; align-items: flex-start !important; }
-    .dash-hdr > div:last-child { width: 100% !important; }
-    .dash-hdr .btn  { flex: 1 !important; justify-content: center !important; }
-    .metrics        { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
-    .metric         { padding: 1rem !important; }
-    .metric-val     { font-size: 22px !important; }
-    .dash-grid      { grid-template-columns: 1fr !important; }
-    .inner-tabs     { display: none !important; }
-
-    /* --- MATCHING --- */
-    .mat-wrap       { padding: 1.25rem 1rem !important; }
-    .match-grid     { grid-template-columns: 1fr !important; gap: 12px !important; }
-
-    /* --- MÉDIATION --- */
-    .med-wrap       { padding: 1.25rem 1rem !important; }
-    .med-grid       { grid-template-columns: 1fr !important; }
-
-    /* --- CONTACT --- */
-    #page-contact > div           { padding: 2rem 1rem !important; }
-    #page-contact [style*="grid-template-columns:repeat(3,1fr)"] { grid-template-columns: 1fr !important; }
-    #page-contact [style*="grid-template-columns:1fr 1fr"]       { grid-template-columns: 1fr !important; }
-    #page-contact [style*="max-width:700px"]  { max-width: 100% !important; }
-    #page-contact [style*="max-width:800px"]  { max-width: 100% !important; }
-    #newsletter-email { min-width: unset !important; width: 100% !important; }
-    #page-contact > div > div[style*="display:flex;gap:10px"] { flex-direction: column !important; }
-
-    /* --- ADMIN --- */
-    #page-admin [style*="max-width:1200px"] { padding: 1rem !important; }
-    .admin-tab { padding: 7px 10px !important; font-size: 11.5px !important; }
-    [style*="display:grid;grid-template-columns:repeat(4,1fr)"] { grid-template-columns: repeat(2,1fr) !important; }
-    [style*="display:grid;grid-template-columns:2fr 1fr"]       { grid-template-columns: 1fr !important; }
-    [style*="display:grid;grid-template-columns:1fr 1fr"]       { grid-template-columns: 1fr !important; }
-    [style*="grid-template-columns:2fr 2fr 1fr 1fr 1fr 120px"]  { display: none !important; }
-    #admin-user-list > div { display: flex !important; flex-wrap: wrap !important; padding: 12px !important; align-items: center !important; gap: 6px !important; }
-    #admin-search   { width: 100% !important; }
-    #admin-filter-statut, #admin-filter-role { flex: 1 !important; }
-
-    /* --- CONNEXION --- */
-    #page-connexion [style*="max-width:480px"] { max-width: 100% !important; padding: 2rem 1rem !important; }
-
-    /* --- MODALE VERROU --- */
-    #lock-modal-box { padding: 2rem 1.25rem !important; max-width: calc(100vw - 2rem) !important; }
-
-    /* --- FOOTER --- */
-    .footer { flex-direction: column !important; gap: 1rem !important; text-align: center !important; padding: 1.5rem 1rem !important; }
-    .footer-links { flex-wrap: wrap !important; justify-content: center !important; gap: 8px !important; }
-  }
-
-  /* ── Mobile moyen (max 600px) ── */
-  @media screen and (max-width: 600px) {
-    .hero h1      { font-size: clamp(20px, 5.5vw, 26px) !important; }
-    .stat-card    { min-width: 50% !important; }
-    .verify-digit { width: 38px !important; height: 46px !important; font-size: 17px !important; }
-    #payment-methods { grid-template-columns: 1fr 1fr !important; }
-    .partner-card { max-width: 200px !important; }
-    #page-contact > div { padding: 1.5rem 0.75rem !important; }
-  }
-
-  /* ── Petit mobile (max 480px) — iPhone SE, petits Android ── */
-  @media screen and (max-width: 480px) {
-    .hero { padding: 2.5rem 0.875rem 2rem !important; }
-    .hero h1 { font-size: clamp(19px, 5vw, 22px) !important; }
-    .hero-sub { font-size: 13px !important; }
-    .section { padding: 2rem 0.875rem !important; }
-    .section-title { font-size: 19px !important; }
-    .inscription-wrap { padding: 1.25rem 0.875rem !important; }
-    .fstep { padding: 1rem 0.875rem !important; }
-    .stat-card { min-width: 100% !important; max-width: 100% !important; border-right: none !important; }
-    #payment-methods { grid-template-columns: 1fr !important; }
-    .verify-digit { width: 36px !important; height: 42px !important; font-size: 16px !important; }
-    #verify-code-inputs { gap: 5px !important; }
-    .sb-item { padding: 6px 8px !important; }
-    .sb-icon { width: 32px !important; height: 32px !important; }
-    .metrics { grid-template-columns: 1fr 1fr !important; }
-    .admin-tab { font-size: 10.5px !important; padding: 6px 8px !important; }
-    .testi-big { padding: 1.25rem 1rem !important; }
-    .testi-big .testi-quote { font-size: 13.5px !important; }
-    .nav-right .btn-outline:not(.btn-primary) { display: none !important; }
-    .cta-section h2 { font-size: 18px !important; }
-    #page-contact > div { padding: 1.25rem 0.75rem !important; }
-    .partner-card { height: 100px !important; }
-  }
-
-  /* ── Très petit mobile (max 360px) — petits Android ── */
-  @media screen and (max-width: 360px) {
-    .hero h1  { font-size: 18px !important; }
-    .hero-sub { font-size: 12.5px !important; }
-    .verify-digit { width: 32px !important; height: 38px !important; font-size: 14px !important; }
-    #verify-code-inputs { gap: 4px !important; }
-    .sb-item  { padding: 4px 6px !important; }
-    .sb-icon  { width: 28px !important; height: 28px !important; }
-    .nav { padding: 0.7rem 0.75rem !important; }
-    .logo { font-size: 13px !important; }
-    .fstep { padding: 0.875rem !important; }
-    .section-title { font-size: 17px !important; }
-    .admin-tab { font-size: 10px !important; padding: 5px 7px !important; }
-    .btn-sm { font-size: 11.5px !important; padding: 6px 10px !important; }
-    .metrics { grid-template-columns: 1fr !important; }
-    .stat-card { min-width: 100% !important; }
-  }
-
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-<!-- Supabase SDK -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 </head>
 <body>
 
@@ -2571,9 +2240,10 @@
         </div>
         <div class="fgroup"><label class="flabel">Filière & Niveau</label><input class="finput" type="text" value="L2 Droit" /></div>
         <div class="fgroup full"><label class="flabel">Genre</label>
-          <div class="radio-group" id="rg-genre" style="gap:12px;">
-            <div class="radio-opt" id="genre-homme" onclick="selGenre('Homme')" style="flex:1;justify-content:center;padding:12px 20px;"><div class="rdot"></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="margin-right:6px;"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.6"/><path d="M6 20C6 16.69 8.69 14 12 14C15.31 14 18 16.69 18 20" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Homme</div>
-            <div class="radio-opt" id="genre-femme" onclick="selGenre('Femme')" style="flex:1;justify-content:center;padding:12px 20px;"><div class="rdot"></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="margin-right:6px;"><circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="1.6"/><path d="M5 21C5 17.13 8.13 14 12 14C15.87 14 19 17.13 19 21" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M12 17V21M10 19H14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Femme</div>
+          <div class="radio-group" id="rg-genre">
+            <div class="radio-opt sel" onclick="selRadio('rg-genre',this)"><div class="rdot"></div>Femme</div>
+            <div class="radio-opt" onclick="selRadio('rg-genre',this)"><div class="rdot"></div>Homme</div>
+            <div class="radio-opt" onclick="selRadio('rg-genre',this)"><div class="rdot"></div>Préfère ne pas préciser</div>
           </div>
         </div>
       </div>
@@ -2586,10 +2256,10 @@
         <div style="width:72px;height:72px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;">
           <svg width="34" height="34" viewBox="0 0 34 34" fill="none"><path d="M4 8H30C31.1 8 32 8.9 32 10V24C32 25.1 31.1 26 30 26H4C2.9 26 2 25.1 2 24V10C2 8.9 2.9 8 4 8Z" stroke="#1D9E75" stroke-width="1.8"/><path d="M2 10L17 19L32 10" stroke="#1D9E75" stroke-width="1.8" stroke-linecap="round"/></svg>
         </div>
-        <h3 style="font-family:'DM Serif Display',serif;font-size:20px;font-weight:400;color:var(--text);margin-bottom:8px;">Confirmez votre email</h3>
-        <p style="font-size:13.5px;color:var(--text-muted);max-width:360px;margin:0 auto 1rem;line-height:1.65;">
-          Votre code est affiché ci-dessous.<br/>
-          Email : <strong id="verify-email-display" style="color:var(--text);">votre email</strong>
+        <h3 style="font-family:'DM Serif Display',serif;font-size:20px;font-weight:400;color:var(--text);margin-bottom:8px;">Vérifiez votre email</h3>
+        <p style="font-size:13.5px;color:var(--text-muted);max-width:360px;margin:0 auto 1.5rem;line-height:1.65;">
+          Un code à 6 chiffres a été envoyé à<br/>
+          <strong id="verify-email-display" style="color:var(--text);">votre email</strong>
         </p>
 
         <!-- Champs code 6 chiffres -->
@@ -2626,24 +2296,16 @@
         <div class="fgrid">
           <div class="fgroup"><label class="flabel">Budget max mensuel (FCFA)</label><input class="finput" type="text" value="30 000" /></div>
           <div class="fgroup"><label class="flabel">Nombre de colocataires</label><select class="fselect"><option>2 personnes</option><option selected>3 personnes</option><option>4 personnes</option></select></div>
-          <div class="fgroup full"><label class="flabel">Zone de préférence à Bouaké</label><input class="finput" type="text" id="zone-chercher" placeholder="Ex : Quartier Air France, proximité UAO, Centre-ville…" /><span style="font-size:11px;color:var(--text-hint);margin-top:3px;display:block;">Indiquez librement votre zone ou quartier préféré</span></div>
           <div class="fgroup full">
-            <label class="flabel">Genre <span style="color:var(--coral);">*</span></label>
-            <div class="radio-group" id="rg-genre" style="gap:12px;">
-              <div class="radio-opt" id="genre-homme" onclick="selGenre('Homme')" style="flex:1;justify-content:center;padding:12px 20px;">
-                <div class="rdot"></div>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.6"/><path d="M6 20C6 16.69 8.69 14 12 14C15.31 14 18 16.69 18 20" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-                Homme
-              </div>
-              <div class="radio-opt" id="genre-femme" onclick="selGenre('Femme')" style="flex:1;justify-content:center;padding:12px 20px;">
-                <div class="rdot"></div>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="1.6"/><path d="M5 21C5 17.13 8.13 14 12 14C15.87 14 19 17.13 19 21" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M12 17V21M10 19H14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-                Femme
-              </div>
+            <label class="flabel">Lieu / Quartier souhaité à Bouaké</label>
+            <div style="position:relative;">
+              <svg style="position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none;width:16px;height:16px;" viewBox="0 0 24 24" fill="none"><path d="M12 2C8.13 2 5 5.13 5 9C5 14.25 12 22 12 22C12 22 19 14.25 19 9C19 5.13 15.87 2 12 2Z" stroke="#888780" stroke-width="1.6"/><circle cx="12" cy="9" r="2.5" fill="#888780"/></svg>
+              <input class="finput" type="text" id="zone-chercher"
+                placeholder="Ex : Quartier Air France, Zone Industrielle, proximité UAO…"
+                style="padding-left:36px;" />
             </div>
-            <div id="genre-error" style="display:none;font-size:11.5px;color:var(--coral);margin-top:4px;">Veuillez sélectionner votre genre.</div>
+            <span style="font-size:11px;color:var(--text-hint);margin-top:4px;display:block;">Saisissez librement le quartier ou la zone où vous souhaitez habiter</span>
           </div>
-
           <div class="fgroup full"><label class="flabel">Disponibilité</label>
             <div class="radio-group" id="rg-dispo">
               <div class="radio-opt sel" onclick="selRadio('rg-dispo',this)"><div class="rdot"></div>Immédiatement</div>
@@ -2724,24 +2386,6 @@
             <div id="logement-photos-preview" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;"></div>
           </div>
         </div>
-      </div>
-
-      <!-- Genre commun aux deux modes -->
-      <div class="fgroup full" style="margin-top:1rem;">
-        <label class="flabel">Genre <span style="color:var(--coral);">*</span></label>
-        <div class="radio-group" id="rg-genre-prop" style="gap:12px;">
-          <div class="radio-opt" id="genre-homme-prop" onclick="selGenre('Homme')" style="flex:1;justify-content:center;padding:12px 20px;">
-            <div class="rdot"></div>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.6"/><path d="M6 20C6 16.69 8.69 14 12 14C15.31 14 18 16.69 18 20" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-            Homme
-          </div>
-          <div class="radio-opt" id="genre-femme-prop" onclick="selGenre('Femme')" style="flex:1;justify-content:center;padding:12px 20px;">
-            <div class="rdot"></div>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="1.6"/><path d="M5 21C5 17.13 8.13 14 12 14C15.87 14 19 17.13 19 21" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M12 17V21M10 19H14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-            Femme
-          </div>
-        </div>
-        <div id="genre-error-prop" style="display:none;font-size:11.5px;color:var(--coral);margin-top:4px;">Veuillez sélectionner votre genre.</div>
       </div>
 
       <div class="factions"><button class="btn btn-outline" onclick="prevFStep(3)">← Retour</button><button class="btn btn-primary" onclick="nextFStep(3)">Continuer →</button></div>
@@ -3462,42 +3106,40 @@ Aminata</textarea>
       return;
     }
 
-    // Bouton loading
-    var btn = document.querySelector('#page-connexion .btn-primary');
-    if (btn) { btn.textContent = 'Connexion…'; btn.disabled = true; }
+    var result = dbLogin(email, pwd);
 
-    var loginPromise = sb ? sbLogin(email, pwd) : Promise.resolve(dbLogin(email, pwd));
-    loginPromise.then(function(result) {
-      if (btn) { btn.textContent = 'Se connecter →'; btn.disabled = false; }
-      if (!result.ok) {
-        var msg = result.error === 'not_found'  ? 'Aucun compte trouvé avec cet email.'
-                : result.error === 'rejected'   ? 'Votre compte a été refusé. Contactez l’admin.'
-                : result.error === 'pending'    ? '⏳ Compte en attente de validation (délai max : 24h).'
-                : 'Mot de passe incorrect. Réessayez.';
-        if (err) { err.innerHTML = msg; err.style.display = 'flex'; }
-        var card = document.querySelector('#page-connexion [style*="background:#fff"]');
-        if (card) { card.style.animation = 'shake 0.4s ease'; setTimeout(function() { card.style.animation = ''; }, 400); }
-        return;
+    if (!result.ok) {
+      if (err) {
+        err.innerHTML = result.error === 'not_found'
+          ? 'Aucun compte trouvé avec cet email.'
+          : 'Mot de passe incorrect. Réessayez.';
+        err.style.display = 'flex';
       }
-      if (err) err.style.display = 'none';
-      dbSetSession(result.user);
-      currentUser = result.user;
-      window._userData    = result.user;
-      window._selectedRole = result.user.role;
-      goToApp();
-    }).catch(function(e) {
-      if (btn) { btn.textContent = 'Se connecter →'; btn.disabled = false; }
-      var r = dbLogin(email, pwd);
-      if (!r.ok) {
-        if (err) { err.innerHTML = 'Connexion impossible. Vérifiez vos identifiants.'; err.style.display = 'flex'; }
-        return;
+      // Animation shake
+      var card = err?.closest('[style*="background:#fff"]') || err?.parentElement;
+      if (card) { card.style.animation = 'shake 0.4s ease'; setTimeout(function() { card.style.animation = ''; }, 400); }
+      return;
+    }
+
+    // Compte en attente de validation
+    if (result.user.statut === 'en_attente') {
+      if (err) {
+        err.innerHTML = '\u23f3 Votre compte est en attente de validation. Nous vous contacterons dès confirmation.';
+        err.style.display = 'flex';
       }
-      dbSetSession(r.user);
-      currentUser = r.user;
-      window._userData     = r.user;
-      window._selectedRole = r.user.role;
-      goToApp();
-    });
+      return;
+    }
+
+    // Connexion réussie
+    if (err) err.style.display = 'none';
+    dbSetSession(result.user);
+    currentUser = result.user;
+
+    // Restaurer les infos dans window._userData pour goToApp
+    window._userData = result.user;
+    window._selectedRole = result.user.role;
+
+    goToApp();
   }
 
   function togglePwd(inputId, btn) {
@@ -3588,13 +3230,6 @@ Aminata</textarea>
   // ===== INSCRIPTION =====
   function nextFStep(n) {
     if (n === 1 && !guardedFirstStep()) return;
-    // Valider genre obligatoire à l'étape 3
-    if (n === 3 && !selectedGenre) {
-      var errId = (selectedRole === 'chercher') ? 'genre-error' : 'genre-error-prop';
-      var errEl = document.getElementById(errId);
-      if (errEl) { errEl.style.display = 'block'; errEl.scrollIntoView({behavior:'smooth',block:'center'}); }
-      return;
-    }
     // Photo obligatoire à l'étape 1
     if (n === 1) {
       if (!photoData) {
@@ -3625,8 +3260,6 @@ Aminata</textarea>
       currentFStep = 'verify';
       return; // Ne pas continuer le flux normal
     }
-    // Sauvegarder genre dans userData
-    if (n === 3 && selectedGenre && window._userData) window._userData.genre = selectedGenre;
     document.getElementById('fs' + n).classList.remove('active');
     document.getElementById('sd' + n).classList.remove('active');
     document.getElementById('sd' + n).classList.add('done');
@@ -3653,146 +3286,6 @@ Aminata</textarea>
 
 
   // ============================================================
-
-  // ════════════════════════════════════════════════
-  // SUPABASE — Base de données en ligne
-  // ════════════════════════════════════════════════
-
-  function initSupabase() {
-    try {
-      if (typeof supabase !== 'undefined' && supabase.createClient) {
-        sb = supabase.createClient(SB_URL, SB_ANON);
-        console.log('[SB] Client initialise');
-        // Pre-charger les utilisateurs dans l'admin si connecte
-        if (adminLoggedIn) sbLoadAllUsers();
-      }
-    } catch(e) { console.warn('[SB] Init error:', e); }
-  }
-
-  // Creer utilisateur dans Supabase + localStorage
-  function sbCreateUser(userData) {
-    // Sauvegarder localement d'abord
-    var localResult = dbCreateUser(userData);
-    if (!localResult.ok) return Promise.resolve(localResult);
-
-    // Puis Supabase si disponible
-    if (!sb) return Promise.resolve(localResult);
-
-    return sb.from('utilisateurs').insert({
-      id:            localResult.user.id,
-      prenom:        userData.prenom || '',
-      nom:           userData.nom || '',
-      email:         userData.email,
-      telephone:     userData.tel || '',
-      etablissement: userData.etablissement || '',
-      role:          userData.role || '',
-      genre:         userData.genre || '',
-      statut:        'en_attente',
-      paiement_ref:  userData.paiementRef || '',
-      created_at:    new Date().toISOString()
-    }).then(function(res) {
-      if (res.error) console.warn('[SB] Insert:', res.error.message);
-      else console.log('[SB] User cree en DB:', userData.email);
-      return localResult;
-    }).catch(function(e) {
-      console.warn('[SB] Create error:', e);
-      return localResult;
-    });
-  }
-
-  // Login avec Supabase + localStorage
-  function sbLogin(email, password) {
-    var localResult = dbLogin(email, password);
-    if (!localResult.ok || !sb) return Promise.resolve(localResult);
-
-    // Synchroniser le statut depuis Supabase
-    return sb.from('utilisateurs').select('statut').eq('email', email).maybeSingle()
-      .then(function(res) {
-        if (!res.error && res.data) {
-          var sbStatut = res.data.statut;
-          if (sbStatut === 'actif') {
-            localResult.user.statut = 'actif';
-            dbUpdateStatus(email, 'actif');
-          } else if (sbStatut === 'rejete') {
-            localResult.user.statut = 'rejete';
-            return { ok: false, error: 'rejected' };
-          } else if (sbStatut === 'en_attente') {
-            localResult.user.statut = 'en_attente';
-            return { ok: false, error: 'pending' };
-          }
-        }
-        return localResult;
-      }).catch(function() { return localResult; });
-  }
-
-  // Mettre a jour le statut dans les deux bases
-  function sbUpdateStatus(email, statut) {
-    dbUpdateStatus(email, statut);
-    if (!sb) return;
-    sb.from('utilisateurs')
-      .update({ statut: statut, updated_at: new Date().toISOString() })
-      .eq('email', email)
-      .then(function(res) {
-        if (!res.error) console.log('[SB] Statut:', email, '->', statut);
-      });
-  }
-
-  // Charger tous les utilisateurs depuis Supabase pour l'admin
-  function sbLoadAllUsers() {
-    if (!sb) { adminSyncFromDB(); adminRenderList(); adminUpdateStats(); return; }
-    sb.from('utilisateurs').select('*').order('created_at', { ascending: false })
-      .then(function(res) {
-        if (res.error) { console.warn('[SB] Load:', res.error.message); return; }
-        var data = res.data || [];
-        data.forEach(function(u) {
-          var ex = adminUsers.find(function(a) { return a.email === u.email; });
-          var mapped = {
-            id:            u.id,
-            nom:           (u.prenom||'') + ' ' + (u.nom||''),
-            email:         u.email,
-            tel:           u.telephone || '',
-            operateur:     u.operateur || 'N/A',
-            ref:           u.paiement_ref || u.id,
-            montant:       2000,
-            role:          u.role || '',
-            genre:         u.genre || '',
-            etablissement: u.etablissement || '',
-            statut:        u.statut === 'actif' ? 'ok' : (u.statut === 'rejete' ? 'rejected' : 'pending'),
-            date:          u.created_at,
-            emailSent:     false
-          };
-          if (!ex) adminUsers.push(mapped);
-          else ex.statut = mapped.statut;
-        });
-        console.log('[SB] ' + data.length + ' users charges');
-        adminRenderList();
-        adminUpdateStats();
-      }).catch(function(e) { console.warn('[SB] Load error:', e); });
-  }
-
-  // Sauvegarder message contact
-  function sbSaveContact(data) {
-    if (!sb) return;
-    sb.from('messages_contact').insert({
-      nom: data.nom, email: data.email, objet: data.objet,
-      message: data.message, type: data.type || 'autre',
-      newsletter: data.newsletter || false,
-      created_at: new Date().toISOString()
-    }).then(function(r) {
-      if (!r.error) console.log('[SB] Contact sauvegarde');
-    });
-  }
-
-  // Abonner newsletter
-  function sbSaveNewsletter(email, nom) {
-    if (!sb) return;
-    sb.from('newsletter').upsert({ email: email, nom: nom||'', created_at: new Date().toISOString() },
-      { onConflict: 'email' }).then(function(r) {
-      if (!r.error) console.log('[SB] Newsletter:', email);
-    });
-  }
-
-
   // BASE DE DONNÉES UTILISATEURS — localStorage persistant
   // ============================================================
 
@@ -3992,33 +3485,22 @@ Aminata</textarea>
   // Enregistrer l'utilisateur en DB au moment du paiement confirmé
   function enregistrerUtilisateurDB(ref) {
     if (!window._userData) return;
-    var data = {
-      prenom:        window._userData.prenom || '',
-      nom:           window._userData.nom || '',
+    var result = dbCreateUser({
+      prenom:        window._userData.prenom,
+      nom:           window._userData.nom,
       email:         window._userData.email,
-      tel:           window._userData.tel || '',
-      etablissement: window._userData.etablissement || '',
-      role:          window._userData.role || 'chercheur',
-      genre:         window._userData.genre || '',
+      tel:           window._userData.tel,
+      etablissement: window._userData.etablissement,
+      role:          window._userData.role,
       password:      window._userData.password,
       paiementRef:   ref
-    };
-    // Utiliser Supabase si disponible, sinon localStorage
-    var promise = sb ? sbCreateUser(data) : Promise.resolve(dbCreateUser(data));
-    promise.then(function(result) {
-      if (result && result.ok) {
-        console.log('[DB] Utilisateur enregistre:', data.email);
-        currentUser = result.user;
-        dbSetSession(result.user);
-      } else if (result) {
-        console.warn('[DB] Erreur:', result.error);
-      }
-    }).catch(function(e) {
-      console.warn('[DB] Error:', e);
-      // Fallback
-      var r = dbCreateUser(data);
-      if (r.ok) { currentUser = r.user; dbSetSession(r.user); }
     });
+    if (result.ok) {
+      console.log('[DB] Utilisateur créé:', result.user.email);
+      currentUser = result.user;
+    } else {
+      console.warn('[DB] Erreur création:', result.error);
+    }
   }
 
 
@@ -4032,112 +3514,24 @@ Aminata</textarea>
   }
 
   function envoyerCodeVerification(email, prenom) {
-    var code = genererCode(); // stocké dans verifyCode global
-    console.log('[VERIFY] ============================');
-    console.log('[VERIFY] Code généré:', code);
-    console.log('[VERIFY] Email destinataire:', email);
-    console.log('[VERIFY] Service ID:', EMAILJS_SERVICE_ID);
-    console.log('[VERIFY] Template ID:', EMAILJS_TEMPLATE_VERIFY);
-    console.log('[VERIFY] Public Key:', EMAILJS_PUBLIC_KEY ? 'OK' : 'MANQUANT');
-    console.log('[VERIFY] emailjs chargé:', typeof emailjs !== 'undefined');
+    var code = genererCode();
+    console.log('[VERIFY] Code généré pour', email, ':', code);
 
-    // Mettre à jour l'affichage de l'email destinataire
-    afficherCodeDirect(code, email);
-
-    // Envoi EmailJS
     if (typeof emailjs === 'undefined') {
-      console.error('[VERIFY] EmailJS SDK non chargé !');
-      afficherErreurEnvoi('Le service email n’est pas disponible.');
+      console.warn('[VERIFY] EmailJS non dispo — code simulé:', code);
       return;
     }
 
-    // S'assurer que emailjs est bien initialisé
-    try { emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY }); } catch(e) {}
-
-    var params = {
-      to_email:    email,
-      nom_complet: prenom || 'Utilisateur',
-      code:        code,
-      expiry:      '10 minutes'
-    };
-    console.log('[VERIFY] Envoi avec params:', JSON.stringify(params));
-
-    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_VERIFY, params)
-      .then(function(response) {
-        console.log('[VERIFY] ✅ Email envoyé ! Status:', response.status, response.text);
-        var note = document.getElementById('verify-email-note');
-        if (note) {
-          note.style.background = 'var(--green-light)';
-          note.style.color = 'var(--green-dark)';
-          note.innerHTML = (
-            '<svg width="16" height="16" viewBox="0 0 16 16" fill="none">'
-            + '<path d="M2 8L6 12L14 4" stroke="#1D9E75" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'
-            + '</svg>'
-            + ' Code envoyé sur <strong>' + email + '</strong> — Vérifiez aussi vos spams.'
-          );
-        }
-      })
-      .catch(function(error) {
-        console.error('[VERIFY] ❌ Erreur EmailJS:', error);
-        console.error('[VERIFY] Détail:', JSON.stringify(error));
-        afficherErreurEnvoi(
-          'Erreur d’envoi (code : ' + (error.status || error.text || 'inconnu') + '). '
-          + 'Vérifiez votre email et réessayez.'
-        );
-      });
-  }
-
-  function afficherErreurEnvoi(msg) {
-    var note = document.getElementById('verify-email-note');
-    if (note) {
-      note.style.background = '#FAECE7';
-      note.style.color = 'var(--coral)';
-      note.textContent = '⚠️ ' + msg;
-    }
-  }
-
-
-  function afficherCodeDirect(code, email) {
-    // Mettre à jour l'affichage de l'email
-    var emailDisp = document.getElementById('verify-email-display');
-    if (emailDisp) emailDisp.textContent = email;
-
-    // Supprimer l'ancienne zone si elle existe
-    var oldZone = document.getElementById('verify-code-zone');
-    if (oldZone) oldZone.remove();
-
-    // Note de statut envoi
-    var note = document.getElementById('verify-email-note');
-    if (!note) {
-      note = document.createElement('div');
-      note.id = 'verify-email-note';
-      note.style.cssText = (
-        'display:flex;align-items:center;gap:8px;font-size:12.5px;'
-        + 'color:var(--text-muted);margin-bottom:14px;justify-content:center;'
-        + 'background:var(--green-light);border-radius:10px;padding:10px 14px;'
-      );
-      var inputs = document.getElementById('verify-code-inputs');
-      if (inputs && inputs.parentNode) {
-        inputs.parentNode.insertBefore(note, inputs);
-      }
-    }
-    note.innerHTML = (
-      '<svg width="16" height="16" viewBox="0 0 24 24" fill="none">'
-      + '<path d="M20 4H4C2.9 4 2 4.9 2 6V18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V6C22 4.9 21.1 4 20 4Z" stroke="#1D9E75" stroke-width="1.6"/>'
-      + '<path d="M22 6L12 13L2 6" stroke="#1D9E75" stroke-width="1.6" stroke-linecap="round"/>'
-      + '</svg>'
-      + 'Un code a été envoyé à <strong style="color:var(--green-dark);">' + email + '</strong>.'
-      + ' Vérifiez aussi vos spams.'
-    );
-
-    // Vider les cases et focus sur la première
-    var digits = document.querySelectorAll('.verify-digit');
-    digits.forEach(function(d) {
-      d.value = '';
-      d.style.borderColor = '';
-      d.style.background  = '';
+    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_VERIFY, {
+      to_email:   email,
+      nom_complet: prenom,
+      code:       code,
+      expiry:     '10 minutes'
+    }).then(function() {
+      console.log('[VERIFY] Code envoyé à', email);
+    }).catch(function(e) {
+      console.warn('[VERIFY] Erreur envoi code:', e);
     });
-    if (digits[0]) digits[0].focus();
   }
 
   function verifierCode() {
@@ -4366,34 +3760,6 @@ Aminata</textarea>
     }, 900);
   }
 
-
-  function selGenre(genre) {
-    selectedGenre = genre;
-    // Réinitialiser tous les boutons genre
-    ['genre-homme','genre-femme','genre-homme-prop','genre-femme-prop'].forEach(function(id) {
-      var el = document.getElementById(id);
-      if (el) {
-        el.classList.remove('sel');
-        el.querySelector('.rdot').style.background = '';
-        el.querySelector('.rdot').style.borderColor = '';
-      }
-    });
-    // Activer le bouton sélectionné
-    var suffix = genre === 'Homme' ? 'homme' : 'femme';
-    ['genre-' + suffix, 'genre-' + suffix + '-prop'].forEach(function(id) {
-      var el = document.getElementById(id);
-      if (el) el.classList.add('sel');
-    });
-    // Masquer les erreurs
-    ['genre-error','genre-error-prop'].forEach(function(id) {
-      var el = document.getElementById(id);
-      if (el) el.style.display = 'none';
-    });
-    // Sauvegarder dans _userData
-    if (window._userData) window._userData.genre = genre;
-    console.log('[GENRE]', genre);
-  }
-
   function selRadio(groupId, el) {
     document.querySelectorAll('#' + groupId + ' .radio-opt').forEach(o => o.classList.remove('sel'));
     el.classList.add('sel');
@@ -4564,7 +3930,6 @@ Aminata</textarea>
       document.getElementById('admin-auth-overlay').style.display = 'none';
       document.getElementById('page-admin').style.display = 'block';
       adminSyncFromDB();
-      sbLoadAllUsers();
       chargerDemandesLocalStorage();
       adminRenderList();
       adminRenderNotifs();
@@ -4727,8 +4092,6 @@ Aminata</textarea>
     if (!u) return;
     u.statut = 'ok';
     u.validatedAt = new Date().toISOString();
-    // Mettre à jour dans Supabase
-    if (u.email) sbUpdateStatus(u.email, 'actif');
     adminRenderList();
     adminRenderNotifs();
     sauvegarderDemandesLocalStorage();
@@ -5085,11 +4448,6 @@ Aminata</textarea>
   const EMAILJS_TEMPLATE_USER    = 'template_cci_user';
   const EMAILJS_TEMPLATE_VERIFY  = 'template_cci_verify'; // Vérification email
   const EMAILJS_PUBLIC_KEY       = '4YafU35KGOv8wj0Vi';
-
-  // ══ SUPABASE CONFIG ══
-  const SB_URL  = 'https://reoprkiwdmrnqdfxwqqb.supabase.co';
-  const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJlb3Bya2l3ZG1ybnFkZnh3cXFiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI5OTQ0NjgsImV4cCI6MjA1ODU3MDQ2OH0.QZS1mevCpQnPjH4RiLHKVEn4j_5qIxEoM9nWsIhxgHw';
-  var sb = null; // client Supabase initialisé au chargement
   // Service dedie aux messages contact (coulibalysieledabila@gmail.com)
   const EMAILJS_SERVICE_CONTACT  = 'service_cci_contact';
   const EMAILJS_TEMPLATE_CONTACT = 'template_cci_contact';
@@ -5264,7 +4622,7 @@ Aminata</textarea>
     paymentValidated = true;
     // Activer le compte en base de données
     if (window._userData && window._userData.email) {
-      sbUpdateStatus(window._userData.email, 'actif');
+      dbUpdateStatus(window._userData.email, 'actif');
       if (currentUser) currentUser.statut = 'actif';
       console.log('[DB] Compte activé:', window._userData.email);
     }
@@ -5354,7 +4712,6 @@ Aminata</textarea>
       }).catch(function() {
         // Fallback: sauvegarder localement quand meme
         sauvegarderMessageContact(nom, email, objet, message, newsletter);
-      sbSaveContact({ nom, email, objet, message, newsletter, type: contactType });
         sucEl.style.display = 'block';
         btn.style.display = 'none';
       });
@@ -5375,7 +4732,6 @@ Aminata</textarea>
       return;
     }
     sauvegarderAbonne(email, '');
-    sbSaveNewsletter(email, '');
     msgEl.textContent = '✓ Vous êtes abonné(e) ! Merci.';
     msgEl.style.color = 'rgba(255,255,255,0.95)';
     msgEl.style.display = 'block';
@@ -5908,23 +5264,6 @@ Aminata</textarea>
     logSync('⬇️ Chargement depuis Supabase...');
   }
 
-  function copierSQL() {
-    var el = document.getElementById('sql-setup');
-    if (!el) return;
-    navigator.clipboard.writeText(el.textContent).then(function() {
-      adminShowToast('SQL copié dans le presse-papiers !', '#1D9E75');
-    }).catch(function() {
-      // Fallback
-      var ta = document.createElement('textarea');
-      ta.value = el.textContent;
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand('copy');
-      document.body.removeChild(ta);
-      adminShowToast('SQL copié !', '#1D9E75');
-    });
-  }
-
   function logSync(msg) {
     var el = document.getElementById('sync-log');
     if (!el) return;
@@ -5992,7 +5331,6 @@ Aminata</textarea>
   }
 
   // Init
-  initSupabase();
   updateCharCount();
   // Vérifier si une session existe (reconnexion automatique)
   var restoredUser = dbRestoreSession();
@@ -6414,48 +5752,6 @@ Aminata</textarea>
             </div>
             <div id="sync-log" style="display:none;margin-top:12px;background:#0B1120;border-radius:8px;padding:10px 14px;font-size:11px;color:#64748b;font-family:monospace;max-height:100px;overflow-y:auto;"></div>
           </div>
-        </div>
-
-        <!-- SQL Setup -->
-        <div style="background:#141C2E;border:1px solid #1e293b;border-radius:16px;padding:20px;margin-bottom:1.5rem;">
-          <div style="font-size:13px;font-weight:600;color:#F1F5F9;margin-bottom:12px;">📋 Script SQL — Créer les tables</div>
-          <p style="font-size:12px;color:#64748b;margin-bottom:12px;">Exécutez ce script dans <strong style="color:#94a3b8;">Supabase → SQL Editor</strong> pour initialiser les tables.</p>
-          <div style="background:#0B1120;border-radius:10px;padding:14px;font-size:11px;color:#94a3b8;font-family:monospace;white-space:pre-wrap;max-height:200px;overflow-y:auto;line-height:1.6;" id="sql-setup">-- Table utilisateurs
-CREATE TABLE IF NOT EXISTS utilisateurs (
-  id            TEXT PRIMARY KEY,
-  prenom        TEXT, nom TEXT, email TEXT UNIQUE NOT NULL,
-  telephone     TEXT, etablissement TEXT, role TEXT, genre TEXT,
-  statut        TEXT DEFAULT 'en_attente',
-  paiement_ref  TEXT, operateur TEXT,
-  created_at    TIMESTAMPTZ DEFAULT now(),
-  updated_at    TIMESTAMPTZ
-);
-
--- Table messages contact
-CREATE TABLE IF NOT EXISTS messages_contact (
-  id         BIGSERIAL PRIMARY KEY,
-  nom TEXT, email TEXT, objet TEXT, message TEXT,
-  type TEXT, newsletter BOOLEAN DEFAULT false,
-  created_at TIMESTAMPTZ DEFAULT now()
-);
-
--- Table newsletter
-CREATE TABLE IF NOT EXISTS newsletter (
-  id         BIGSERIAL PRIMARY KEY,
-  email TEXT UNIQUE NOT NULL, nom TEXT,
-  created_at TIMESTAMPTZ DEFAULT now()
-);
-
--- Activer RLS (Row Level Security)
-ALTER TABLE utilisateurs     ENABLE ROW LEVEL SECURITY;
-ALTER TABLE messages_contact ENABLE ROW LEVEL SECURITY;
-ALTER TABLE newsletter       ENABLE ROW LEVEL SECURITY;
-
--- Policies pour anon (lecture/écriture publique)
-CREATE POLICY "anon_all" ON utilisateurs     FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "anon_all" ON messages_contact FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "anon_all" ON newsletter       FOR ALL USING (true) WITH CHECK (true);</div>
-          <button onclick="copierSQL()" style="margin-top:10px;background:#1e293b;border:1px solid #334155;border-radius:8px;padding:8px 14px;font-size:12px;color:#94a3b8;cursor:pointer;">📋 Copier le SQL</button>
         </div>
 
         <!-- Table Supabase live -->
